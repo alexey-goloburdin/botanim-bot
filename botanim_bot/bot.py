@@ -8,7 +8,11 @@ from telegram import Update
 from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, filters
 
 import config
-from books import get_all_books, get_already_read_books
+from books import (
+    get_all_books,
+    get_already_read_books,
+    get_now_reading_book
+)
 import message_texts
 
 
@@ -69,13 +73,25 @@ async def already(update: Update, context: ContextTypes.DEFAULT_TYPE):
     already_read_books = await get_already_read_books()
     response = "Прочитанные книги:\n\n"
     for index, book in enumerate(already_read_books, 1):
-        read_start, read_finish = map(
-                lambda date: datetime.strptime(date, "%Y-%m-%d"),
-                (book.read_start, book.read_finish))
-        read_start, read_finish = map(
-                lambda date: date.strftime(config.DATE_FORMAT),
-                (read_start, read_finish))
-        response += (f"{index}. {book.name} (читали {read_start} — {read_finish})\n")
+        response += (f"{index}. {book.name} "
+                     f"(читали с {book.read_start} по {book.read_finish})\n")
+    await context.bot.send_message(
+            chat_id=effective_chat.id,
+            text=response)
+
+
+async def now(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    effective_chat = update.effective_chat
+    if not effective_chat:
+        logger.warning("effective_chat is None in /help")
+        return
+    now_read_books = await get_now_reading_book()
+    response = "Сейчас мы читаем:\n\n"
+    just_one_book = len(now_read_books) == 1
+    for index, book in enumerate(now_read_books, 1):
+        response += (f"{str(index) + '. ' if not just_one_book else ''}"
+                     f"{book.name} "
+                     f"(с {book.read_start} по {book.read_finish})\n")
     await context.bot.send_message(
             chat_id=effective_chat.id,
             text=response)
@@ -99,5 +115,9 @@ if __name__ == '__main__':
     already_handler = CommandHandler('already', already,
                filters=filters.User(username="@"+TELEGRAM_ADMIN_USERNAME))
     application.add_handler(already_handler)
+
+    now_handler = CommandHandler('now', now,
+               filters=filters.User(username="@"+TELEGRAM_ADMIN_USERNAME))
+    application.add_handler(now_handler)
 
     application.run_polling()
