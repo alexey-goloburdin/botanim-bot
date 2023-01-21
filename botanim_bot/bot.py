@@ -11,7 +11,7 @@ import config
 from books import (
     get_all_books,
     get_already_read_books,
-    get_now_reading_book
+    get_now_reading_books
 )
 import message_texts
 
@@ -85,7 +85,7 @@ async def now(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not effective_chat:
         logger.warning("effective_chat is None in /help")
         return
-    now_read_books = await get_now_reading_book()
+    now_read_books = await get_now_reading_books()
     response = "Сейчас мы читаем:\n\n"
     just_one_book = len(now_read_books) == 1
     for index, book in enumerate(now_read_books, 1):
