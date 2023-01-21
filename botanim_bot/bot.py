@@ -1,11 +1,14 @@
 import asyncio
+from datetime import datetime 
 import os
 
 import logging
 import telegram
 from telegram import Update
 from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, filters
-from books import get_all_books
+
+import config
+from books import get_all_books, get_already_read_books
 import message_texts
 
 
@@ -58,6 +61,26 @@ async def all_books(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await asyncio.sleep(0.3)
 
 
+async def already(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    effective_chat = update.effective_chat
+    if not effective_chat:
+        logger.warning("effective_chat is None in /help")
+        return
+    already_read_books = await get_already_read_books()
+    response = "Прочитанные книги:\n\n"
+    for index, book in enumerate(already_read_books, 1):
+        read_start, read_finish = map(
+                lambda date: datetime.strptime(date, "%Y-%m-%d"),
+                (book.read_start, book.read_finish))
+        read_start, read_finish = map(
+                lambda date: date.strftime(config.DATE_FORMAT),
+                (read_start, read_finish))
+        response += (f"{index}. {book.name} (читали {read_start} — {read_finish})\n")
+    await context.bot.send_message(
+            chat_id=effective_chat.id,
+            text=response)
+
+
 if __name__ == '__main__':
     application = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
     
@@ -71,6 +94,10 @@ if __name__ == '__main__':
     
     all_books_handler = CommandHandler('allbooks', all_books,
                filters=filters.User(username="@"+TELEGRAM_ADMIN_USERNAME))
-    application.add_handler(all_books_handler )
+    application.add_handler(all_books_handler)
+
+    already_handler = CommandHandler('already', already,
+               filters=filters.User(username="@"+TELEGRAM_ADMIN_USERNAME))
+    application.add_handler(already_handler)
 
     application.run_polling()
