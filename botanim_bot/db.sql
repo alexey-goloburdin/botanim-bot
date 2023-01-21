@@ -19,27 +19,37 @@ create table book (
   read_start date,
   read_finish date,
   foreign key(category_id) references book_category(id),
+  check (
+    (
+      read_finish > read_start
+      and read_finish is not null
+      and read_start is not null
+    ) or (
+      read_finish is null or read_start is null
+    )
+  ),
   unique(category_id, ordering)
 );
 
 create table voting (
   id integer primary key,
-  voting_start timestamp not null unique,
-  voting_finish timestamp not null unique
+  voting_start date not null unique,
+  voting_finish date not null unique,
+  check (voting_finish > voting_start)
 );
 
 create table vote (
-  id integer primary key,
   vote_id integer,
   user_id integer,
-  first_book integer,
-  second_book integer,
-  third_book integer,
+  first_book_id integer,
+  second_book_id integer,
+  third_book_id integer,
   foreign key(vote_id) references voting(id),
   foreign key(user_id) references bot_user(telegram_id),
-  foreign key(first_book) references book(id),
-  foreign key(second_book) references book(id),
-  foreign key(third_book) references book(id)
+  foreign key(first_book_id) references book(id),
+  foreign key(second_book_id) references book(id),
+  foreign key(third_book_id) references book(id),
+  primary key(vote_id, user_id)
 );
 
 insert into book_category (name, ordering) values 
@@ -206,3 +216,6 @@ set
 read_start='2023-01-01',
 read_finish='2023-02-12'
 where name='PostgreSQL. Основы языка SQL :: Евгений Моргунов';
+
+
+insert into voting (voting_start, voting_finish) values ('2023-01-21', '2023-01-25');
