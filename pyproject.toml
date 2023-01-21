@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "botanim-bot"
+version = "0.1.0"
+description = ""
+authors = ["Alexey Goloburdin <terrarium-a@yandex.ru>"]
+readme = "README.md"
+packages = [{include = "botanim_bot"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+python-telegram-bot = "^20.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
