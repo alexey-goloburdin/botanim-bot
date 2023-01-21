@@ -9,6 +9,7 @@ packages = [{include = "botanim_bot"}]
 [tool.poetry.dependencies]
 python = "^3.11"
 python-telegram-bot = "^20.0"
+aiosqlite = "^0.18.0"
 
 
 [build-system]
