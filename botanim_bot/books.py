@@ -14,8 +14,16 @@ class Book:
     name: str
     category_id: int
     category_name: str
-    read_start: str  # formatted date
-    read_finish: str  # formatted date
+    read_start: str | None
+    read_finish: str | None
+
+    def __post_init__(self):
+        """Set up read_start and read_finish to needed string format"""
+        for field in ("read_start", "read_finish"):
+            value = getattr(self, field)
+            if value is None: continue
+            value = datetime.strptime(value, "%Y-%m-%d").strftime(config.DATE_FORMAT)
+            setattr(self, field, value)
 
 
 @dataclass
@@ -28,19 +36,7 @@ class Category:
 async def get_all_books() -> list[Category]:
     sql = _get_books_base_sql() + """
         ORDER BY c."ordering", b."ordering" """
-    books = []
-    async with aiosqlite.connect(config.SQLITE_DB_FILE) as db:
-        db.row_factory = aiosqlite.Row
-        async with db.execute(sql) as cursor:
-            async for row in cursor:
-                books.append(Book(
-                    id=row["book_id"],
-                    name=row["book_name"],
-                    category_id=row["category_id"],
-                    category_name=row["category_name"],
-                    read_start=row["read_start"],
-                    read_finish=row["read_finish"]
-                ))
+    books = await _get_books_from_db(sql)
     return _group_books_by_categories(books)
 
 
@@ -92,18 +88,12 @@ async def _get_books_from_db(sql: LiteralString) -> list[Book]:
         db.row_factory = aiosqlite.Row
         async with db.execute(sql) as cursor:
             async for row in cursor:
-                read_start, read_finish = map(
-                        lambda date: datetime.strptime(date, "%Y-%m-%d"),
-                        (row["read_start"], row["read_finish"]))
-                read_start, read_finish = map(
-                        lambda date: date.strftime(config.DATE_FORMAT),
-                        (read_start, read_finish))
                 books.append(Book(
                     id=row["book_id"],
                     name=row["book_name"],
                     category_id=row["category_id"],
                     category_name=row["category_name"],
-                    read_start=read_start,
-                    read_finish=read_finish
+                    read_start=row["read_start"],
+                    read_finish=row["read_finish"]
                 ))
     return books
