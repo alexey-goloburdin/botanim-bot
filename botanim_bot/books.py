@@ -38,15 +38,31 @@ def _format_book_name(book_name_with_author: str) -> str:
     try:
         book_name, author = tuple(map(str.strip, book_name_with_author.split("::")))
     except ValueError:
-        print(book_name_with_author)
         return book_name_with_author
     return f"{book_name}. <i>{author}</i>"
 
 
-def build_category_with_books_string(category: Category) -> str:
+def calculate_category_books_start_index(
+    categories: Iterable[Category], current_category: Category
+) -> int:
+    start_index = 0
+    for category in categories:
+        if category.id != current_category.id:
+            start_index += len(tuple(category.books))
+        else:
+            return start_index
+
+
+def build_category_with_books_string(
+    category: Category, start_index: int | None = None
+) -> str:
     response = ["<b>" + category.name + "</b>\n\n"]
-    for _, book in enumerate(category.books, 1):
-        response.append(f"◦ {_format_book_name(book.name)}\n")
+    for index, book in enumerate(category.books, 1):
+        if start_index is None:
+            prefix = "◦"
+        else:
+            prefix = f"{start_index + index}."
+        response.append(f"{prefix} {_format_book_name(book.name)}\n")
     return "".join(response)
 
 
