@@ -18,7 +18,7 @@ from books import (
     get_already_read_books,
     get_now_reading_books,
     get_not_started_books,
-    get_books_by_numbers
+    get_books_by_numbers,
 )
 from votings import save_vote, get_actual_voting, get_leaders
 import config
