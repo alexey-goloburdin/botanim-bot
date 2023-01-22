@@ -26,9 +26,12 @@ class Voting:
         """Set up voting_start and voting_finish to needed string format"""
         for field in ("voting_start", "voting_finish"):
             value = getattr(self, field)
-            if value is None: continue
+            if value is None:
+                continue
             try:
-                value = datetime.strptime(value, "%Y-%m-%d").strftime(config.DATE_FORMAT)
+                value = datetime.strptime(value, "%Y-%m-%d").strftime(
+                    config.DATE_FORMAT
+                )
             except ValueError:
                 continue
             setattr(self, field, value)
@@ -38,7 +41,6 @@ class Voting:
 class VoteResults:
     voting: Voting
     leaders: list[BookVoteResult]
-
 
 
 logger = logging.getLogger(__name__)
@@ -57,13 +59,13 @@ async def get_actual_voting() -> Voting | None:
         db.row_factory = aiosqlite.Row
         async with db.execute(sql) as cursor:
             row = await cursor.fetchone()
-            if row is None: return None
+            if row is None:
+                return None
             return Voting(
                 id=row["id"],
                 voting_start=row["voting_start"],
-                voting_finish=row["voting_finish"]
+                voting_finish=row["voting_finish"],
             )
-
 
 
 async def save_vote(telegram_user_id: int, books: Iterable[Book]) -> None:
@@ -79,13 +81,16 @@ async def save_vote(telegram_user_id: int, books: Iterable[Book]) -> None:
         """
     books = tuple(books)
     async with aiosqlite.connect(config.SQLITE_DB_FILE) as db:
-        await db.execute(sql, {
-            "vote_id": actual_voting.id,
-            "user_id": telegram_user_id,
-            "first_book": books[0].id,
-            "second_book": books[1].id,
-            "third_book": books[2].id,
-        })
+        await db.execute(
+            sql,
+            {
+                "vote_id": actual_voting.id,
+                "user_id": telegram_user_id,
+                "first_book": books[0].id,
+                "second_book": books[1].id,
+                "third_book": books[2].id,
+            },
+        )
         await db.commit()
 
 
@@ -97,9 +102,9 @@ async def get_leaders() -> VoteResults | None:
         voting=Voting(
             voting_start=actual_voting.voting_start,
             voting_finish=actual_voting.voting_finish,
-            id=actual_voting.id
+            id=actual_voting.id,
         ),
-        leaders=[]
+        leaders=[],
     )
     sql = """
         SELECT t2.*, b.name as book_name
@@ -133,8 +138,7 @@ async def get_leaders() -> VoteResults | None:
         async with db.execute(sql, {"voting_id": actual_voting.id}) as cursor:
             rows = await cursor.fetchall()
             for row in rows:
-                vote_results.leaders.append(BookVoteResult(
-                    book_name=row["book_name"],
-                    score=row["score"]
-                ))
+                vote_results.leaders.append(
+                    BookVoteResult(book_name=row["book_name"], score=row["score"])
+                )
     return vote_results
