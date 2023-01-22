@@ -128,11 +128,12 @@ async def vote_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     books_formatted = []
     for index, book in enumerate(books, 1):
         books_formatted.append(f"{index}. {book.name}")
+    books_count = len(books_formatted)
     await context.bot.send_message(
         chat_id=effective_chat.id,
         text=message_texts.SUCCESS_VOTE.format(
             books="\n".join(books_formatted),
-            books_count=books_to_words(len(books_formatted)),
+            books_count=f"{books_count} {books_to_words(books_count)}",
         ),
         parse_mode=telegram.constants.ParseMode.HTML,
     )
