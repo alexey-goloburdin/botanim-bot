@@ -88,7 +88,7 @@ async def all_books(update: Update, context: ContextTypes.DEFAULT_TYPE):
             text=response,
             parse_mode=telegram.constants.ParseMode.HTML,
         )
-    await asyncio.sleep(config.SLEEP_BETWEEN_MESSAGES_TO_ONE_USER)
+        await asyncio.sleep(config.SLEEP_BETWEEN_MESSAGES_TO_ONE_USER)
 
 
 async def already(update: Update, context: ContextTypes.DEFAULT_TYPE):
