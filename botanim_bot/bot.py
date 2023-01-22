@@ -21,6 +21,7 @@ from books import (
     get_books_by_numbers,
     build_category_with_books_string,
     calculate_category_books_start_index,
+    format_book_name,
 )
 from num_to_words import books_to_words
 from votings import save_vote, get_actual_voting, get_leaders
@@ -151,12 +152,15 @@ async def vote_results(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
 
-    response = "ТОП 10 книг голосования:\n\n"
+    books = []
     for index, book in enumerate(leaders.leaders, 1):
-        response += f"{index}. {book.book_name} с рейтингом {book.score}\n"
-    response += (
-        f"\nДаты голосования: с {leaders.voting.voting_start} "
-        f"по {leaders.voting.voting_finish}"
+        books.append(
+            f"{index}. {format_book_name(book.book_name)}. " f"Рейтинг: {book.score}"
+        )
+    response = message_texts.VOTE_RESULTS.format(
+        books="\n".join(books),
+        voting_start=leaders.voting.voting_start,
+        voting_finish=leaders.voting.voting_finish,
     )
     await context.bot.send_message(
         chat_id=effective_chat.id,

@@ -34,7 +34,7 @@ class Category:
     books: Iterable[Book]
 
 
-def _format_book_name(book_name_with_author: str) -> str:
+def format_book_name(book_name_with_author: str) -> str:
     try:
         book_name, author = tuple(map(str.strip, book_name_with_author.split("::")))
     except ValueError:
@@ -62,7 +62,7 @@ def build_category_with_books_string(
             prefix = "◦"
         else:
             prefix = f"{start_index + index}."
-        response.append(f"{prefix} {_format_book_name(book.name)}\n")
+        response.append(f"{prefix} {format_book_name(book.name)}\n")
     return "".join(response)
 
 

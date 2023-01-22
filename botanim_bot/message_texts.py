@@ -66,3 +66,10 @@ SUCCESS_VOTE = """Ура, ты выбрал {books_count}:
 проголосуй повторно с командой
 /vote
 """
+
+VOTE_RESULTS = """ТОП 10 книг голосования
+
+{books}
+
+Даты голосования: с {voting_start} по {voting_finish}
+"""
