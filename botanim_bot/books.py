@@ -152,23 +152,3 @@ async def _get_books_from_db(sql: LiteralString) -> Iterable[Book]:
                     )
                 )
     return books
-
-
-def split_categories(categories: list[Category], max_count=4000, sep="\n\n\n") -> list[str]:
-    categories_formatted = []
-    index = 1
-    for category in categories:
-        response = "<b>" + category.name + "</b>\n\n"
-        for book in category.books:
-            response += f"{index}. {book.name}\n"
-            index += 1
-        categories_formatted.append(response)
-
-    result = [categories_formatted[0]]
-    for category in categories_formatted[1:]:
-        merged_categories = result[-1] + sep + category
-        if len(merged_categories) < max_count:
-            result[-1] = merged_categories
-        else:
-            result.append(category)
-    return result

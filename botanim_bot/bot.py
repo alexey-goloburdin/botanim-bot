@@ -18,8 +18,7 @@ from books import (
     get_already_read_books,
     get_now_reading_books,
     get_not_started_books,
-    get_books_by_numbers,
-    split_categories
+    get_books_by_numbers
 )
 from votings import save_vote, get_actual_voting, get_leaders
 import config
@@ -35,6 +34,20 @@ TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_ADMIN_USERNAME = os.getenv("TELEGRAM_ADMIN_USERNAME")
 if not TELEGRAM_BOT_TOKEN or not TELEGRAM_ADMIN_USERNAME:
     exit("Specify TELEGRAM_BOT_TOKEN and TELEGRAM_ADMIN_USERNAME env variables")
+
+
+def join_text_by_length(values: list[str], max_length=4000, sep="\n\n\n") -> list[str]:
+    if len(values) == 0:
+        return []
+
+    result = [values[0]]
+    for value in values[1:]:
+        merged = result[-1] + sep + value
+        if len(merged) < max_length:
+            result[-1] = merged
+        else:
+            result.append(value)
+    return result
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -120,13 +133,16 @@ async def vote(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     categories_with_books = await get_not_started_books()
-    splitted_categories = split_categories(
-        categories=categories_with_books,
-        max_count=4000,
-        sep="\n\n\n"
-    )
+    index = 1
 
-    for response in splitted_categories:
+    formatted_categories = []
+    for category in categories_with_books:
+        response = "<b>" + category.name + "</b>\n\n"
+        for book in category.books:
+            response += f"{index}. {book.name}\n"
+            index += 1
+
+    for response in join_text_by_length(formatted_categories):
         await context.bot.send_message(
             chat_id=effective_chat.id,
             text=response,
