@@ -34,6 +34,22 @@ class Category:
     books: Iterable[Book]
 
 
+def _format_book_name(book_name_with_author: str) -> str:
+    try:
+        book_name, author = tuple(map(str.strip, book_name_with_author.split("::")))
+    except ValueError:
+        print(book_name_with_author)
+        return book_name_with_author
+    return f"{book_name}. <i>{author}</i>"
+
+
+def build_category_with_books_string(category: Category) -> str:
+    response = ["<b>" + category.name + "</b>\n\n"]
+    for _, book in enumerate(category.books, 1):
+        response.append(f"◦ {_format_book_name(book.name)}\n")
+    return "".join(response)
+
+
 async def get_all_books() -> Iterable[Category]:
     sql = (
         _get_books_base_sql()
