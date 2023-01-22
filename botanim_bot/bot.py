@@ -22,6 +22,7 @@ from books import (
     build_category_with_books_string,
     calculate_category_books_start_index,
 )
+from num_to_words import books_to_words
 from votings import save_vote, get_actual_voting, get_leaders
 import config
 import message_texts
@@ -111,7 +112,7 @@ async def vote_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
             parse_mode=telegram.constants.ParseMode.HTML,
         )
         return
-    books = await get_books_by_numbers(numbers)
+    books = tuple(await get_books_by_numbers(numbers))
     if len(books) != config.VOTE_ELEMENTS_COUNT:
         await context.bot.send_message(
             chat_id=effective_chat.id,
@@ -121,7 +122,6 @@ async def vote_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     # TODO move to message_texts module all hardcoded texts
-    # «три книги» correspond to config.VOTE_ELEMENTS_COUNT
     await save_vote(update.effective_user.id, books)
 
     books_formatted = []
@@ -129,7 +129,10 @@ async def vote_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
         books_formatted.append(f"{index}. {book.name}")
     await context.bot.send_message(
         chat_id=effective_chat.id,
-        text=message_texts.SUCCESS_VOTE.format(books="\n".join(books_formatted)),
+        text=message_texts.SUCCESS_VOTE.format(
+            books="\n".join(books_formatted),
+            books_count=books_to_words(len(books_formatted)),
+        ),
         parse_mode=telegram.constants.ParseMode.HTML,
     )
 
