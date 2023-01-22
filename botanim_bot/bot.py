@@ -22,7 +22,8 @@ from books import (
 )
 from votings import (
     save_vote,
-    get_actual_voting_id
+    get_actual_voting,
+    get_leaders
 )
 import config
 import message_texts
@@ -115,7 +116,7 @@ async def vote(update: Update, context: ContextTypes.DEFAULT_TYPE):
         logger.warning("effective_chat is None in /allbooks")
         return
 
-    if await get_actual_voting_id() is None:
+    if await get_actual_voting() is None:
         await context.bot.send_message(
                 chat_id=effective_chat.id,
                 text=message_texts.NO_ACTUAL_VOTING,
@@ -146,7 +147,7 @@ async def vote_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
         logger.warning("effective_chat is None in /allbooks")
         return
 
-    if await get_actual_voting_id() is None:
+    if await get_actual_voting() is None:
         await context.bot.send_message(
                 chat_id=effective_chat.id,
                 text=message_texts.NO_ACTUAL_VOTING,
@@ -176,6 +177,29 @@ async def vote_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     response = "Ура, ты выбрал три книги:\n\n"
     for index, book in enumerate(books, 1):
         response += f"{index}. {book.name}\n"
+    await context.bot.send_message(
+            chat_id=effective_chat.id,
+            text=response,
+            parse_mode=telegram.constants.ParseMode.HTML)
+
+
+async def vote_results(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    effective_chat = update.effective_chat
+    if not effective_chat:
+        logger.warning("effective_chat is None in /allbooks")
+        return
+    leaders = await get_leaders()
+    if leaders is None:
+        await context.bot.send_message(
+                chat_id=effective_chat.id,
+                text=message_texts.NO_VOTE_RESULTS,
+                parse_mode=telegram.constants.ParseMode.HTML)
+        return
+
+    response = "ТОП 10 книг голосования:\n\n"
+    for index, book in enumerate(leaders.leaders, 1):
+        response += f"{index}. {book.book_name} с рейтингом {book.score}\n"
+    response += f"\nДаты голосования: с {leaders.voting.voting_start} по {leaders.voting.voting_finish}"
     await context.bot.send_message(
             chat_id=effective_chat.id,
             text=response,
@@ -215,5 +239,9 @@ if __name__ == '__main__':
                 & (~filters.COMMAND),
             vote_process)
     application.add_handler(vote_process_handler)
+
+    vote_results_handler = CommandHandler('voteresults', vote_results,
+               filters=filters.User(username="@"+TELEGRAM_ADMIN_USERNAME))
+    application.add_handler(vote_results_handler)
 
     application.run_polling()
