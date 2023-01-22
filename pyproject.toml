@@ -10,6 +10,7 @@ packages = [{include = "botanim_bot"}]
 python = "^3.11"
 python-telegram-bot = "^20.0"
 aiosqlite = "^0.18.0"
+num2words = "0.5.12"
 
 
 [tool.poetry.group.dev.dependencies]

@@ -21,6 +21,7 @@ from books import (
     get_books_by_numbers,
 )
 from votings import save_vote, get_actual_voting, get_leaders
+from numtowords import books2words
 import config
 import message_texts
 
@@ -177,9 +178,10 @@ async def vote_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     books_formatted = []
     for index, book in enumerate(books, 1):
         books_formatted.append(f"{index}. {book.name}")
+    num_books = books2words(len(books_formatted))
     await context.bot.send_message(
         chat_id=effective_chat.id,
-        text=message_texts.SUCCESS_VOTE.format(books="\n".join(books_formatted)),
+        text=message_texts.SUCCESS_VOTE.format(books="\n".join(books_formatted), num_books=num_books),
         parse_mode=telegram.constants.ParseMode.HTML,
     )
 
