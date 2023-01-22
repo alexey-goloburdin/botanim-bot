@@ -24,7 +24,6 @@ class Voting:
 
     def __post_init__(self):
         """Set up voting_start and voting_finish to needed string format"""
-        print(self.voting_start, self.voting_finish, type(self.voting_start), type(self.voting_finish))
         for field in ("voting_start", "voting_finish"):
             value = getattr(self, field)
             if value is None: continue
