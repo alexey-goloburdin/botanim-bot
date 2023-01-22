@@ -73,17 +73,22 @@ async def all_books(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not effective_chat:
         logger.warning("effective_chat is None in /allbooks")
         return
+
     categories_with_books = await get_all_books()
+    formatted_categories = []
     for category in categories_with_books:
-        response = "<b>" + category.name + "</b>\n\n"
+        formatted_category = "<b>" + category.name + "</b>\n\n"
         for index, book in enumerate(category.books, 1):
-            response += f"{index}. {book.name}\n"
+            formatted_category += f"{index}. {book.name}\n"
+        formatted_categories.append(formatted_category)
+
+    for response in join_text_by_length(formatted_categories):
         await context.bot.send_message(
             chat_id=effective_chat.id,
             text=response,
             parse_mode=telegram.constants.ParseMode.HTML,
         )
-        await asyncio.sleep(config.SLEEP_BETWEEN_MESSAGES_TO_ONE_USER)
+    await asyncio.sleep(config.SLEEP_BETWEEN_MESSAGES_TO_ONE_USER)
 
 
 async def already(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -133,14 +138,15 @@ async def vote(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     categories_with_books = await get_not_started_books()
+    formatted_categories = []
     index = 1
 
-    formatted_categories = []
     for category in categories_with_books:
-        response = "<b>" + category.name + "</b>\n\n"
+        formatted_category = "<b>" + category.name + "</b>\n\n"
         for book in category.books:
-            response += f"{index}. {book.name}\n"
+            formatted_category += f"{index}. {book.name}\n"
             index += 1
+        formatted_categories.append(formatted_category)
 
     for response in join_text_by_length(formatted_categories):
         await context.bot.send_message(
