@@ -174,12 +174,12 @@ async def vote_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # «три книги» correspond to config.VOTE_ELEMENTS_COUNT
     await save_vote(update.effective_user.id, books)
 
-    response = "Ура, ты выбрал три книги:\n\n"
+    books_formatted = []
     for index, book in enumerate(books, 1):
-        response += f"{index}. {book.name}\n"
+        books_formatted.append(f"{index}. {book.name}")
     await context.bot.send_message(
         chat_id=effective_chat.id,
-        text=response,
+        text=message_texts.SUCCESS_VOTE.format(books="\n".join(books_formatted)),
         parse_mode=telegram.constants.ParseMode.HTML,
     )
 
