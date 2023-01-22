@@ -19,6 +19,7 @@ from books import (
     get_now_reading_books,
     get_not_started_books,
     get_books_by_numbers,
+    split_categories
 )
 from votings import save_vote, get_actual_voting, get_leaders
 import config
@@ -119,12 +120,13 @@ async def vote(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     categories_with_books = await get_not_started_books()
-    index = 1
-    for category in categories_with_books:
-        response = "<b>" + category.name + "</b>\n\n"
-        for book in category.books:
-            response += f"{index}. {book.name}\n"
-            index += 1
+    splitted_categories = split_categories(
+        categories=categories_with_books,
+        max_count=4000,
+        sep="\n\n\n"
+    )
+
+    for response in splitted_categories:
         await context.bot.send_message(
             chat_id=effective_chat.id,
             text=response,
