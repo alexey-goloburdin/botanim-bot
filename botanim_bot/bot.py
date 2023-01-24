@@ -1,7 +1,8 @@
+import logging
 import os
 import re
+from typing import Iterable
 
-import logging
 import telegram
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import (
@@ -13,6 +14,8 @@ from telegram.ext import (
     filters,
 )
 
+import config
+import message_texts
 from books import (
     get_all_books,
     get_already_read_books,
@@ -22,12 +25,10 @@ from books import (
     build_category_with_books_string,
     calculate_category_books_start_index,
     format_book_name,
+    Category,
 )
 from num_to_words import books_to_words
 from votings import save_vote, get_actual_voting, get_leaders
-import config
-import message_texts
-
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
@@ -170,27 +171,77 @@ async def vote_results(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 
-def _get_categories_keyboard(
+def _get_category_switcher_keyboard(
     current_index: int, overall_count: int, prefix: str
 ) -> InlineKeyboardMarkup:
-    prev_index = current_index - 1
-    if prev_index < 0:
-        prev_index = overall_count - 1
-    next_index = current_index + 1
-    if next_index > overall_count - 1:
-        next_index = 0
+    prev_category_index = current_index - 1
+    if prev_category_index < 0:
+        prev_category_index = overall_count - 1
+    next_category_index = current_index + 1
+    if next_category_index > overall_count - 1:
+        next_category_index = 0
+
+    # TODO: change keyboard callback data generation out of Telegram's limitations (1-64 characters) to avoid errors
     keyboard = [
         [
-            InlineKeyboardButton("<", callback_data=f"{prefix}{prev_index}"),
+            InlineKeyboardButton("<", callback_data=f"{prefix}{prev_category_index}"),
             InlineKeyboardButton(
-                str(current_index + 1) + "/" + str(overall_count), callback_data=" "
+                str(current_index + 1) + "/" + str(overall_count),
+                callback_data=f"{prefix}{config.CATEGORIES_LIST_CALLBACK_PATTERN}{current_index}"
             ),
             InlineKeyboardButton(
                 ">",
-                callback_data=f"{prefix}{next_index}",
+                callback_data=f"{prefix}{next_category_index}",
             ),
         ]
     ]
+    return InlineKeyboardMarkup(keyboard)
+
+
+def _get_boards_count(overall_count: int, categories_count_per_board: int) -> int:
+    return overall_count // categories_count_per_board
+
+
+def _get_board_index_by_category_index(category_index: int, categories_count_per_board: int) -> int:
+    return category_index // categories_count_per_board
+
+
+def _get_categories_list_keyboard(
+    categories: Iterable[Category], board_index: int, category_index: int, overall_categories_count: int,
+    prefix: str, categories_count_per_board: int = config.CATEGORIES_PER_BOARD
+) -> InlineKeyboardMarkup:
+    boards_count = _get_boards_count(overall_categories_count, categories_count_per_board)
+
+    previous_index = board_index - 1
+    if previous_index < 0:
+        previous_index = boards_count - 1
+    next_index = board_index + 1
+    if next_index > boards_count - 1:
+        next_index = 0
+
+    keyboard = []
+
+    first_board_category_index = board_index * categories_count_per_board
+    for category in categories[first_board_category_index:first_board_category_index + categories_count_per_board]:
+        keyboard.append([InlineKeyboardButton(
+            category.name,
+            callback_data=f"{prefix}{config.SELECT_CATEGORY_PATTERN}{category.id - 1}"
+        )])
+
+    keyboard.append([
+        InlineKeyboardButton(
+            "<",
+            callback_data=f"{prefix}{config.CATEGORIES_LIST_CALLBACK_PATTERN}{previous_index}/{category_index}"
+        ),
+        InlineKeyboardButton(
+            str(board_index + 1) + "/" + str(boards_count),
+            callback_data=f"{prefix}{config.CATEGORIES_LIST_CALLBACK_PATTERN}hide/{category_index}"
+        ),
+        InlineKeyboardButton(
+            ">",
+            callback_data=f"{prefix}{config.CATEGORIES_LIST_CALLBACK_PATTERN}{next_index}/{category_index}",
+        ),
+    ])
     return InlineKeyboardMarkup(keyboard)
 
 
@@ -212,7 +263,7 @@ async def vote_button(update: Update, _):
         text=build_category_with_books_string(
             current_category, category_books_start_index
         ),
-        reply_markup=_get_categories_keyboard(
+        reply_markup=_get_category_switcher_keyboard(
             current_category_index,
             len(categories_with_books),
             config.VOTE_BOOKS_CALLBACK_PATTERN,
@@ -247,7 +298,7 @@ async def vote(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await update.message.reply_text(
         build_category_with_books_string(current_category, category_books_start_index),
-        reply_markup=_get_categories_keyboard(
+        reply_markup=_get_category_switcher_keyboard(
             0, len(categories_with_books), config.VOTE_BOOKS_CALLBACK_PATTERN
         ),
         parse_mode=telegram.constants.ParseMode.HTML,
@@ -287,7 +338,7 @@ async def all_books(update: Update, _: ContextTypes.DEFAULT_TYPE):
 
     await update.message.reply_text(
         build_category_with_books_string(categories_with_books[0]),
-        reply_markup=_get_categories_keyboard(
+        reply_markup=_get_category_switcher_keyboard(
             0, len(categories_with_books), config.ALL_BOOKS_CALLBACK_PATTERN
         ),
         parse_mode=telegram.constants.ParseMode.HTML,
@@ -302,18 +353,100 @@ async def all_books_button(update: Update, _):
     categories_with_books = list(await get_all_books())
 
     pattern_prefix_length = len(config.ALL_BOOKS_CALLBACK_PATTERN)
-    current_category_index = int(query.data[pattern_prefix_length:])
+    query_without_pattern = query.data[pattern_prefix_length:]
+
+    current_category_index = int(query_without_pattern)
+
     await query.edit_message_text(
         text=build_category_with_books_string(
             categories_with_books[current_category_index]
         ),
-        reply_markup=_get_categories_keyboard(
+        reply_markup=_get_category_switcher_keyboard(
             current_category_index,
             len(categories_with_books),
             config.ALL_BOOKS_CALLBACK_PATTERN,
         ),
         parse_mode=telegram.constants.ParseMode.HTML,
     )
+
+
+async def select_all_books_category_button(update: Update, _):
+    query = update.callback_query
+    if not query.data or not query.data.strip():
+        return
+
+    categories_with_books = list(await get_all_books())
+
+    pattern_prefix_length = len(config.ALL_BOOKS_CALLBACK_PATTERN) + len(config.SELECT_CATEGORY_PATTERN)
+    query_without_pattern = query.data[pattern_prefix_length:]
+
+    current_category_index = int(query_without_pattern)
+
+    await query.edit_message_text(
+        text=build_category_with_books_string(
+            categories_with_books[current_category_index]
+        ),
+        reply_markup=_get_category_switcher_keyboard(
+            current_category_index,
+            len(categories_with_books),
+            config.ALL_BOOKS_CALLBACK_PATTERN,
+        ),
+        parse_mode=telegram.constants.ParseMode.HTML,
+    )
+
+
+async def show_all_books_categories_button(update: Update, _):
+    query = update.callback_query
+    if not query.data or not query.data.strip():
+        return
+    categories_with_books = list(await get_all_books())
+
+    pattern_prefix_length = len(config.ALL_BOOKS_CALLBACK_PATTERN) + len(config.CATEGORIES_LIST_CALLBACK_PATTERN)
+    query_without_pattern = query.data[pattern_prefix_length:]
+
+    current_category_index = int(query_without_pattern)
+
+    await query.edit_message_reply_markup(
+        reply_markup=_get_categories_list_keyboard(
+            categories_with_books,
+            _get_board_index_by_category_index(current_category_index, config.CATEGORIES_PER_BOARD),
+            current_category_index,
+            len(categories_with_books),
+            config.ALL_BOOKS_CALLBACK_PATTERN
+        )
+    )
+
+
+async def all_books_categories_list_button(update: Update, _):
+    query = update.callback_query
+    if not query.data or not query.data.strip():
+        return
+
+    categories_with_books = list(await get_all_books())
+
+    pattern_prefix_length = len(config.ALL_BOOKS_CALLBACK_PATTERN) + len(config.CATEGORIES_LIST_CALLBACK_PATTERN)
+    query_without_prefix = query.data[pattern_prefix_length:]
+
+    action, current_category_index = query_without_prefix.split("/")
+    if action == "hide":
+        await query.edit_message_reply_markup(
+            reply_markup=_get_category_switcher_keyboard(
+                int(current_category_index),
+                len(categories_with_books),
+                config.ALL_BOOKS_CALLBACK_PATTERN,
+            ),
+        )
+        return
+    elif action.isdigit():
+        await query.edit_message_reply_markup(
+            reply_markup=_get_categories_list_keyboard(
+                categories_with_books,
+                int(action),
+                int(current_category_index),
+                len(categories_with_books),
+                config.ALL_BOOKS_CALLBACK_PATTERN,
+            ),
+        )
 
 
 if __name__ == "__main__":
@@ -339,6 +472,24 @@ if __name__ == "__main__":
         CallbackQueryHandler(
             all_books_button,
             pattern="^" + config.ALL_BOOKS_CALLBACK_PATTERN + r"(\d+)$",
+        )
+    )
+    application.add_handler(
+        CallbackQueryHandler(
+            select_all_books_category_button,
+            pattern="^" + config.ALL_BOOKS_CALLBACK_PATTERN + config.SELECT_CATEGORY_PATTERN + r"(\d+)$",
+        )
+    )
+    application.add_handler(
+        CallbackQueryHandler(
+            show_all_books_categories_button,
+            pattern="^" + config.ALL_BOOKS_CALLBACK_PATTERN + config.CATEGORIES_LIST_CALLBACK_PATTERN + r"(\d+)$",
+        )
+    )
+    application.add_handler(
+        CallbackQueryHandler(
+            all_books_categories_list_button,
+            pattern="^" + config.ALL_BOOKS_CALLBACK_PATTERN + config.CATEGORIES_LIST_CALLBACK_PATTERN + r"(.+)/",
         )
     )
 
