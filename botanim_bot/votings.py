@@ -28,12 +28,9 @@ class Voting:
             value = getattr(self, field)
             if value is None:
                 continue
-            try:
-                value = datetime.strptime(value, "%Y-%m-%d").strftime(
-                    config.DATE_FORMAT
-                )
-            except ValueError:
-                continue
+            value = datetime.strptime(value, "%Y-%m-%d").strftime(
+                config.DATE_FORMAT
+            )
             setattr(self, field, value)
 
 
@@ -99,11 +96,7 @@ async def get_leaders() -> VoteResults | None:
     if actual_voting is None:
         return None
     vote_results = VoteResults(
-        voting=Voting(
-            voting_start=actual_voting.voting_start,
-            voting_finish=actual_voting.voting_finish,
-            id=actual_voting.id,
-        ),
+        voting=actual_voting,
         leaders=[],
     )
     sql = """
