@@ -247,7 +247,6 @@ def _get_categories_list_keyboard(
 
 async def vote_button(update: Update, _):
     query = update.callback_query
-    await query.answer()
     if not query.data or not query.data.strip():
         return
     categories_with_books = list(await get_not_started_books())
@@ -347,7 +346,6 @@ async def all_books(update: Update, _: ContextTypes.DEFAULT_TYPE):
 
 async def all_books_button(update: Update, _):
     query = update.callback_query
-    await query.answer()
     if not query.data or not query.data.strip():
         return
     categories_with_books = list(await get_all_books())
