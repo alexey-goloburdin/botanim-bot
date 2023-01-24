@@ -61,7 +61,7 @@ async def help(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def already(update: Update, context: ContextTypes.DEFAULT_TYPE):
     effective_chat = update.effective_chat
     if not effective_chat:
-        logger.warning("effective_chat is None in /help")
+        logger.warning("effective_chat is None in /already")
         return
     already_read_books = await get_already_read_books()
     response = "Прочитанные книги:\n\n"
@@ -76,9 +76,9 @@ async def already(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def now(update: Update, context: ContextTypes.DEFAULT_TYPE):
     effective_chat = update.effective_chat
     if not effective_chat:
-        logger.warning("effective_chat is None in /help")
+        logger.warning("effective_chat is None in /now")
         return
-    now_read_books = await get_now_reading_books()
+    now_read_books = tuple(await get_now_reading_books())
     response = "Сейчас мы читаем:\n\n"
     just_one_book = len(now_read_books) == 1
     for index, book in enumerate(now_read_books, 1):
@@ -93,7 +93,7 @@ async def now(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def vote_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     effective_chat = update.effective_chat
     if not effective_chat:
-        logger.warning("effective_chat is None in /allbooks")
+        logger.warning("effective_chat is None in /vote_process")
         return
 
     if await get_actual_voting() is None:
@@ -142,7 +142,7 @@ async def vote_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def vote_results(update: Update, context: ContextTypes.DEFAULT_TYPE):
     effective_chat = update.effective_chat
     if not effective_chat:
-        logger.warning("effective_chat is None in /allbooks")
+        logger.warning("effective_chat is None in /vote_results")
         return
     leaders = await get_leaders()
     if leaders is None:
@@ -194,7 +194,7 @@ def _get_categories_keyboard(
     return InlineKeyboardMarkup(keyboard)
 
 
-async def vote_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def vote_button(update: Update, _):
     query = update.callback_query
     await query.answer()
     if not query.data or not query.data.strip():
@@ -224,7 +224,7 @@ async def vote_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def vote(update: Update, context: ContextTypes.DEFAULT_TYPE):
     effective_chat = update.effective_chat
     if not effective_chat:
-        logger.warning("effective_chat is None in /allbooks")
+        logger.warning("effective_chat is None in /vote")
         return
 
     if await get_actual_voting() is None:
@@ -275,7 +275,7 @@ async def vote(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return
 
 
-async def all_books(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def all_books(update: Update, _: ContextTypes.DEFAULT_TYPE):
     effective_chat = update.effective_chat
     if not effective_chat:
         logger.warning("effective_chat is None in /allbooks")
@@ -294,7 +294,7 @@ async def all_books(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 
-async def all_books_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def all_books_button(update: Update, _):
     query = update.callback_query
     await query.answer()
     if not query.data or not query.data.strip():
