@@ -5,7 +5,7 @@ def books_to_words(books_count: int) -> str:
     return {
         4 < last < 10 or last == 0 or 10 < books_count < 20: "книг",
         1 < last < 5: "книги",
-        last == 1: "книгу"
+        last == 1 and books_count != 11: "книгу"
         }[True]
     
 
