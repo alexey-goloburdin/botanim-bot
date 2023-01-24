@@ -222,11 +222,17 @@ def _get_categories_list_keyboard(
 
     keyboard = []
 
+    categories = tuple(categories)
     first_board_category_index = board_index * categories_count_per_board
-    for category in categories[first_board_category_index:first_board_category_index + categories_count_per_board]:
+    for index, category in enumerate(categories):
+        if index < first_board_category_index:
+            continue
+        if index >= first_board_category_index + categories_count_per_board:
+            break
+
         keyboard.append([InlineKeyboardButton(
             category.name,
-            callback_data=f"{prefix}{config.SELECT_CATEGORY_PATTERN}{category.id - 1}"
+            callback_data=f"{prefix}{config.SELECT_CATEGORY_PATTERN}{index}"
         )])
 
     keyboard.append([
