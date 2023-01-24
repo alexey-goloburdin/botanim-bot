@@ -1,6 +1,7 @@
 import logging
 import os
 import re
+from math import ceil
 from typing import Iterable
 
 import telegram
@@ -199,7 +200,7 @@ def _get_category_switcher_keyboard(
 
 
 def _get_boards_count(overall_count: int, categories_count_per_board: int) -> int:
-    return overall_count // categories_count_per_board
+    return ceil(overall_count / categories_count_per_board)
 
 
 def _get_board_index_by_category_index(category_index: int, categories_count_per_board: int) -> int:
