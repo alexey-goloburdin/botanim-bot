@@ -1,14 +1,11 @@
 def books_to_words(books_count: int) -> str:
-    books_count = books_count % 100
-    last = books_count % 10
-    
-    return {
-        4 < last < 10 or last == 0 or 10 < books_count < 20: "книг",
-        1 < last < 5: "книги",
-        last == 1: "книгу"
-        }[True]
-    
-
-if __name__ == "__main__":
-    for num in (1, 2, 5, 10, 11, 19, 20, 21, 121, 125):
-        print(f"{num=}, {books_to_words(num)}")
+    days = ["книга", "книги", "книг"]
+    if books_count % 10 == 1 and books_count % 100 != 11:
+        p = 0
+    elif 2 <= books_count % 10 <= 4 and (
+        books_count % 100 < 10 or books_count % 100 >= 20
+    ):
+        p = 1
+    else:
+        p = 2
+    return days[p]
