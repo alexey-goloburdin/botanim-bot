@@ -218,4 +218,4 @@ read_finish='2023-02-12'
 where name='PostgreSQL. Основы языка SQL :: Евгений Моргунов';
 
 
-insert into voting (voting_start, voting_finish) values ('2023-01-21', '2023-01-25');
+insert into voting (voting_start, voting_finish) values ('2023-01-26', '2023-01-30');

@@ -1,9 +1,10 @@
 import re
+from typing import cast
 
 
 import logging
 import telegram
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
+from telegram import Chat, InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import (
     ApplicationBuilder,
     CallbackQueryHandler,
@@ -40,28 +41,14 @@ if not config.TELEGRAM_BOT_TOKEN:
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    effective_chat = update.effective_chat
-    if not effective_chat:
-        logger.warning("effective_chat is None in /start")
-        return
-    await context.bot.send_message(
-        chat_id=effective_chat.id, text=message_texts.GREETINGS
-    )
+    await _send_response(update, context, message_texts.GREETINGS)
 
 
 async def help(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    effective_chat = update.effective_chat
-    if not effective_chat:
-        logger.warning("effective_chat is None in /help")
-        return
-    await context.bot.send_message(chat_id=effective_chat.id, text=message_texts.HELP)
+    await _send_response(update, context, message_texts.HELP)
 
 
 async def already(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    effective_chat = update.effective_chat
-    if not effective_chat:
-        logger.warning("effective_chat is None in /help")
-        return
     already_read_books = await get_already_read_books()
     response = "Прочитанные книги:\n\n"
     for index, book in enumerate(already_read_books, 1):
@@ -69,14 +56,10 @@ async def already(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"{index}. {book.name} "
             f"(читали с {book.read_start} по {book.read_finish})\n"
         )
-    await context.bot.send_message(chat_id=effective_chat.id, text=response)
+    await _send_response(update, context, response)
 
 
 async def now(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    effective_chat = update.effective_chat
-    if not effective_chat:
-        logger.warning("effective_chat is None in /help")
-        return
     now_read_books = await get_now_reading_books()
     response = "Сейчас мы читаем:\n\n"
     just_one_book = len(now_read_books) == 1
@@ -86,38 +69,25 @@ async def now(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"{book.name} "
             f"(с {book.read_start} по {book.read_finish})\n"
         )
-    await context.bot.send_message(chat_id=effective_chat.id, text=response)
+    await _send_response(update, context, response)
 
 
 async def vote_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    effective_chat = update.effective_chat
-    if not effective_chat:
-        logger.warning("effective_chat is None in /allbooks")
-        return
-
     if await get_actual_voting() is None:
-        await context.bot.send_message(
-            chat_id=effective_chat.id,
-            text=message_texts.NO_ACTUAL_VOTING,
-            parse_mode=telegram.constants.ParseMode.HTML,
-        )
+        await _send_response(update, context, message_texts.NO_ACTUAL_VOTING)
         return
 
     user_message = update.message.text
     numbers = re.findall(r"\d+", user_message)
     if len(tuple(set(map(int, numbers)))) != config.VOTE_ELEMENTS_COUNT:
-        await context.bot.send_message(
-            chat_id=effective_chat.id,
-            text=message_texts.VOTE_PROCESS_INCORRECT_INPUT,
-            parse_mode=telegram.constants.ParseMode.HTML,
+        await _send_response(
+            update, context, message_texts.VOTE_PROCESS_INCORRECT_INPUT
         )
         return
     books = tuple(await get_books_by_numbers(numbers))
     if len(books) != config.VOTE_ELEMENTS_COUNT:
-        await context.bot.send_message(
-            chat_id=effective_chat.id,
-            text=message_texts.VOTE_PROCESS_INCORRECT_BOOKS,
-            parse_mode=telegram.constants.ParseMode.HTML,
+        await _send_response(
+            update, context, message_texts.VOTE_PROCESS_INCORRECT_BOOKS
         )
         return
 
@@ -128,28 +98,20 @@ async def vote_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     for index, book in enumerate(books, 1):
         books_formatted.append(f"{index}. {book.name}")
     books_count = len(books_formatted)
-    await context.bot.send_message(
-        chat_id=effective_chat.id,
-        text=message_texts.SUCCESS_VOTE.format(
+    await _send_response(
+        update,
+        context,
+        message_texts.SUCCESS_VOTE.format(
             books="\n".join(books_formatted),
             books_count=f"{books_count} {books_to_words(books_count)}",
         ),
-        parse_mode=telegram.constants.ParseMode.HTML,
     )
 
 
 async def vote_results(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    effective_chat = update.effective_chat
-    if not effective_chat:
-        logger.warning("effective_chat is None in /allbooks")
-        return
     leaders = await get_leaders()
     if leaders is None:
-        await context.bot.send_message(
-            chat_id=effective_chat.id,
-            text=message_texts.NO_VOTE_RESULTS,
-            parse_mode=telegram.constants.ParseMode.HTML,
-        )
+        await _send_response(update, context, message_texts.NO_VOTE_RESULTS)
         return
 
     books = []
@@ -162,11 +124,7 @@ async def vote_results(update: Update, context: ContextTypes.DEFAULT_TYPE):
         voting_start=leaders.voting.voting_start,
         voting_finish=leaders.voting.voting_finish,
     )
-    await context.bot.send_message(
-        chat_id=effective_chat.id,
-        text=response,
-        parse_mode=telegram.constants.ParseMode.HTML,
-    )
+    await _send_response(update, context, response)
 
 
 def _get_categories_keyboard(
@@ -221,17 +179,8 @@ async def vote_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def vote(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    effective_chat = update.effective_chat
-    if not effective_chat:
-        logger.warning("effective_chat is None in /allbooks")
-        return
-
     if await get_actual_voting() is None:
-        await context.bot.send_message(
-            chat_id=effective_chat.id,
-            text=message_texts.NO_ACTUAL_VOTING,
-            parse_mode=telegram.constants.ParseMode.HTML,
-        )
+        await _send_response(update, context, message_texts.NO_ACTUAL_VOTING)
         return
 
     if not update.message:
@@ -254,11 +203,6 @@ async def vote(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def all_books(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    effective_chat = update.effective_chat
-    if not effective_chat:
-        logger.warning("effective_chat is None in /allbooks")
-        return
-
     categories_with_books = list(await get_all_books())
     if not update.message:
         return
@@ -294,17 +238,28 @@ async def all_books_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 
-if __name__ == "__main__":
+def _get_chat_id(update: Update) -> int | str:
+    return cast(Chat, update.effective_chat).id
+
+
+async def _send_response(
+    update: Update, context: ContextTypes.DEFAULT_TYPE, response: str
+) -> None:
+    await context.bot.send_message(
+        chat_id=_get_chat_id(update),
+        text=response,
+        parse_mode=telegram.constants.ParseMode.HTML,
+    )
+
+
+def main():
     application = ApplicationBuilder().token(config.TELEGRAM_BOT_TOKEN).build()
 
-    start_handler = CommandHandler("start", start)
-    application.add_handler(start_handler)
+    application.add_handler(CommandHandler("start", start))
 
-    help_handler = CommandHandler("help", help)
-    application.add_handler(help_handler)
+    application.add_handler(CommandHandler("help", help))
 
-    all_books_handler = CommandHandler("allbooks", all_books)
-    application.add_handler(all_books_handler)
+    application.add_handler(CommandHandler("allbooks", all_books))
     application.add_handler(
         CallbackQueryHandler(
             all_books_button,
@@ -312,28 +267,28 @@ if __name__ == "__main__":
         )
     )
 
-    already_handler = CommandHandler("already", already)
-    application.add_handler(already_handler)
+    application.add_handler(CommandHandler("already", already))
 
-    now_handler = CommandHandler("now", now)
-    application.add_handler(now_handler)
+    application.add_handler(CommandHandler("now", now))
 
-    vote_handler = CommandHandler("vote", vote)
-    application.add_handler(vote_handler)
+    application.add_handler(CommandHandler("vote", vote))
     application.add_handler(
         CallbackQueryHandler(
             vote_button,
             pattern="^" + config.VOTE_BOOKS_CALLBACK_PATTERN + r"(\d+)$",
         )
     )
-
-    vote_process_handler = MessageHandler(
-        filters.TEXT & (~filters.COMMAND),
-        vote_process,
+    application.add_handler(
+        MessageHandler(
+            filters.TEXT & (~filters.COMMAND),
+            vote_process,
+        )
     )
-    application.add_handler(vote_process_handler)
 
-    vote_results_handler = CommandHandler("voteresults", vote_results)
-    application.add_handler(vote_results_handler)
+    application.add_handler(CommandHandler("voteresults", vote_results))
 
     application.run_polling()
+
+
+if __name__ == "__main__":
+    main()

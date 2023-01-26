@@ -20,7 +20,10 @@ Telegram-бот для книжного клуба [Ботаним!](https://bot
 cp .env.example .env
 ```
 
-Для управления зависимостями используется [poetry](https://python-poetry.org/). Установка зависимостей и запуск бота:
+Для управления зависимостями используется [poetry](https://python-poetry.org/),
+требуется Python 3.11.
+
+Установка зависимостей и запуск бота:
 
 ```bash
 poetry install
