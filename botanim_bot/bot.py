@@ -1,5 +1,5 @@
-import os
 import re
+
 
 import logging
 import telegram
@@ -34,10 +34,9 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-TELEGRAM_ADMIN_USERNAME = os.getenv("TELEGRAM_ADMIN_USERNAME")
-if not TELEGRAM_BOT_TOKEN or not TELEGRAM_ADMIN_USERNAME:
-    exit("Specify TELEGRAM_BOT_TOKEN and TELEGRAM_ADMIN_USERNAME env variables")
+
+if not config.TELEGRAM_BOT_TOKEN:
+    exit("Specify TELEGRAM_BOT_TOKEN env variable")
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -253,27 +252,6 @@ async def vote(update: Update, context: ContextTypes.DEFAULT_TYPE):
         parse_mode=telegram.constants.ParseMode.HTML,
     )
 
-    """
-    index = 1
-    for category in categories_with_books:
-        response = "<b>" + category.name + "</b>\n\n"
-        for book in category.books:
-            response += f"{index}. {book.name}\n"
-            index += 1
-        await context.bot.send_message(
-            chat_id=effective_chat.id,
-            text=response,
-            parse_mode=telegram.constants.ParseMode.HTML,
-        )
-        await asyncio.sleep(config.SLEEP_BETWEEN_MESSAGES_TO_ONE_USER)
-    await context.bot.send_message(
-        chat_id=effective_chat.id,
-        text=message_texts.VOTE,
-        parse_mode=telegram.constants.ParseMode.HTML,
-    )
-    """
-    return
-
 
 async def all_books(update: Update, context: ContextTypes.DEFAULT_TYPE):
     effective_chat = update.effective_chat
@@ -317,23 +295,15 @@ async def all_books_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 if __name__ == "__main__":
-    application = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
+    application = ApplicationBuilder().token(config.TELEGRAM_BOT_TOKEN).build()
 
-    start_handler = CommandHandler(
-        "start", start, filters=filters.User(username="@" + TELEGRAM_ADMIN_USERNAME)
-    )
+    start_handler = CommandHandler("start", start)
     application.add_handler(start_handler)
 
-    help_handler = CommandHandler(
-        "help", help, filters=filters.User(username="@" + TELEGRAM_ADMIN_USERNAME)
-    )
+    help_handler = CommandHandler("help", help)
     application.add_handler(help_handler)
 
-    all_books_handler = CommandHandler(
-        "allbooks",
-        all_books,
-        filters=filters.User(username="@" + TELEGRAM_ADMIN_USERNAME),
-    )
+    all_books_handler = CommandHandler("allbooks", all_books)
     application.add_handler(all_books_handler)
     application.add_handler(
         CallbackQueryHandler(
@@ -342,19 +312,13 @@ if __name__ == "__main__":
         )
     )
 
-    already_handler = CommandHandler(
-        "already", already, filters=filters.User(username="@" + TELEGRAM_ADMIN_USERNAME)
-    )
+    already_handler = CommandHandler("already", already)
     application.add_handler(already_handler)
 
-    now_handler = CommandHandler(
-        "now", now, filters=filters.User(username="@" + TELEGRAM_ADMIN_USERNAME)
-    )
+    now_handler = CommandHandler("now", now)
     application.add_handler(now_handler)
 
-    vote_handler = CommandHandler(
-        "vote", vote, filters=filters.User(username="@" + TELEGRAM_ADMIN_USERNAME)
-    )
+    vote_handler = CommandHandler("vote", vote)
     application.add_handler(vote_handler)
     application.add_handler(
         CallbackQueryHandler(
@@ -364,18 +328,12 @@ if __name__ == "__main__":
     )
 
     vote_process_handler = MessageHandler(
-        filters.User(username="@" + TELEGRAM_ADMIN_USERNAME)
-        & filters.TEXT
-        & (~filters.COMMAND),
+        filters.TEXT & (~filters.COMMAND),
         vote_process,
     )
     application.add_handler(vote_process_handler)
 
-    vote_results_handler = CommandHandler(
-        "voteresults",
-        vote_results,
-        filters=filters.User(username="@" + TELEGRAM_ADMIN_USERNAME),
-    )
+    vote_results_handler = CommandHandler("voteresults", vote_results)
     application.add_handler(vote_results_handler)
 
     application.run_polling()
