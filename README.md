@@ -17,7 +17,7 @@ Telegram-бот для книжного клуба [Ботаним!](https://bot
 Скопируйте `.env.example` в `.env` и отредактируйте `.env` файл, заполнив в нём все переменные окружения:
 
 ```bash
-cp .env.example .env
+cp botanim_bot/.env.example botanim_bot/.env
 ```
 
 Для управления зависимостями используется [poetry](https://python-poetry.org/),
