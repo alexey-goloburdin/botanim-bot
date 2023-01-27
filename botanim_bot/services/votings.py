@@ -3,11 +3,10 @@ from datetime import datetime
 import logging
 from typing import Iterable
 
-import aiosqlite
-
 from .books import Book
 from .users import insert_user
 from .. import config
+from ..db import fetch_all, execute, fetch_one
 
 
 @dataclass
@@ -55,17 +54,14 @@ async def get_actual_voting() -> Voting | None:
         ORDER BY voting_start
         LIMIT 1
     """
-    async with aiosqlite.connect(config.SQLITE_DB_FILE) as db:
-        db.row_factory = aiosqlite.Row
-        async with db.execute(sql) as cursor:
-            row = await cursor.fetchone()
-            if row is None:
-                return None
-            return Voting(
-                id=row["id"],
-                voting_start=row["voting_start"],
-                voting_finish=row["voting_finish"],
-            )
+    voting = await fetch_one(sql)
+    if not voting:
+        return None
+    return Voting(
+        id=voting["id"],
+        voting_start=voting["voting_start"],
+        voting_finish=voting["voting_finish"],
+    )
 
 
 async def save_vote(telegram_user_id: int, books: Iterable[Book]) -> None:
@@ -80,18 +76,16 @@ async def save_vote(telegram_user_id: int, books: Iterable[Book]) -> None:
         VALUES (:vote_id, :user_id, :first_book, :second_book, :third_book)
         """
     books = tuple(books)
-    async with aiosqlite.connect(config.SQLITE_DB_FILE) as db:
-        await db.execute(
-            sql,
-            {
-                "vote_id": actual_voting.id,
-                "user_id": telegram_user_id,
-                "first_book": books[0].id,
-                "second_book": books[1].id,
-                "third_book": books[2].id,
-            },
-        )
-        await db.commit()
+    await execute(
+        sql,
+        {
+            "vote_id": actual_voting.id,
+            "user_id": telegram_user_id,
+            "first_book": books[0].id,
+            "second_book": books[1].id,
+            "third_book": books[2].id,
+        },
+    )
 
 
 async def get_leaders() -> VoteResults | None:
@@ -133,12 +127,9 @@ async def get_leaders() -> VoteResults | None:
         LIMIT 10) t2
         LEFT JOIN book b on b.id=t2.book_id
     """
-    async with aiosqlite.connect(config.SQLITE_DB_FILE) as db:
-        db.row_factory = aiosqlite.Row
-        async with db.execute(sql, {"voting_id": actual_voting.id}) as cursor:
-            rows = await cursor.fetchall()
-            for row in rows:
-                vote_results.leaders.append(
-                    BookVoteResult(book_name=row["book_name"], score=row["score"])
-                )
+    rows = await fetch_all(sql, {"voting_id": actual_voting.id})
+    for row in rows:
+        vote_results.leaders.append(
+            BookVoteResult(book_name=row["book_name"], score=row["score"])
+        )
     return vote_results

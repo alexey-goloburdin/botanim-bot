@@ -7,6 +7,8 @@ from telegram.ext import (
     filters,
 )
 
+from .db import close_db
+
 from . import config
 from . import handlers
 
@@ -58,4 +60,11 @@ def main():
     application.run_polling()
 
 
-main()
+try:
+    main()
+except Exception:
+    import traceback
+
+    logger.warning(traceback.format_exc())
+finally:
+    close_db()

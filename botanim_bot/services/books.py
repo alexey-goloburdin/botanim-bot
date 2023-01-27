@@ -1,11 +1,10 @@
 from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import datetime
-from typing import LiteralString
-
-import aiosqlite
+from typing import LiteralString, cast
 
 from .. import config
+from ..db import fetch_all
 
 
 @dataclass
@@ -44,7 +43,7 @@ def format_book_name(book_name_with_author: str) -> str:
 
 def calculate_category_books_start_index(
     categories: Iterable[Category], current_category: Category
-) -> int:
+) -> int | None:
     start_index = 0
     for category in categories:
         if category.id != current_category.id:
@@ -135,7 +134,7 @@ async def get_books_by_numbers(numbers: Iterable[int]) -> Iterable[Book]:
         ON t0.column1 = t2.idx
         ORDER BY t0.column2
     """
-    books = await _get_books_from_db(sql)
+    books = await _get_books_from_db(cast(LiteralString, sql))
     return books
 
 
@@ -168,19 +167,15 @@ def _get_books_base_sql(select_param: LiteralString | None = None) -> LiteralStr
 
 
 async def _get_books_from_db(sql: LiteralString) -> Iterable[Book]:
-    books = []
-    async with aiosqlite.connect(config.SQLITE_DB_FILE) as db:
-        db.row_factory = aiosqlite.Row
-        async with db.execute(sql) as cursor:
-            async for row in cursor:
-                books.append(
-                    Book(
-                        id=row["book_id"],
-                        name=row["book_name"],
-                        category_id=row["category_id"],
-                        category_name=row["category_name"],
-                        read_start=row["read_start"],
-                        read_finish=row["read_finish"],
-                    )
-                )
-    return books
+    books_raw = await fetch_all(sql)
+    return [
+        Book(
+            id=book["book_id"],
+            name=book["book_name"],
+            category_id=book["category_id"],
+            category_name=book["category_name"],
+            read_start=book["read_start"],
+            read_finish=book["read_finish"],
+        )
+        for book in books_raw
+    ]
