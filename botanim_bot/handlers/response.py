@@ -5,7 +5,7 @@ from telegram import Chat, InlineKeyboardMarkup, Update
 from telegram.ext import ContextTypes
 
 
-def _get_chat_id(update: Update) -> int | str:
+def _get_chat_id(update: Update) -> int:
     return cast(Chat, update.effective_chat).id
 
 
@@ -15,9 +15,11 @@ async def send_response(
     response: str,
     keyboard: InlineKeyboardMarkup | None = None,
 ) -> None:
-    await context.bot.send_message(
-        chat_id=_get_chat_id(update),
-        text=response,
-        reply_markup=keyboard,
-        parse_mode=telegram.constants.ParseMode.HTML,
-    )
+    args = {
+        "chat_id": _get_chat_id(update),
+        "text": response,
+        "parse_mode": telegram.constants.ParseMode.HTML,
+    }
+    if keyboard:
+        args["reply_markup"] = keyboard
+    await context.bot.send_message(**args)
