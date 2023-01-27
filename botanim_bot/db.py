@@ -14,7 +14,9 @@ async def get_db() -> aiosqlite.Connection:
     return get_db.db
 
 
-async def fetch_all(sql: LiteralString, params: Optional[Iterable[Any]] = None):
+async def fetch_all(
+    sql: LiteralString, params: Optional[Iterable[Any]] = None
+) -> list[dict]:
     results = []
     db = await get_db()
     args: tuple[LiteralString, Optional[Iterable[Any]]] = (sql, params)
@@ -31,7 +33,9 @@ async def fetch_all(sql: LiteralString, params: Optional[Iterable[Any]] = None):
     return results
 
 
-async def fetch_one(sql: LiteralString, params: Optional[Iterable[Any]] = None):
+async def fetch_one(
+    sql: LiteralString, params: Optional[Iterable[Any]] = None
+) -> dict | None:
     db = await get_db()
     args: tuple[LiteralString, Optional[Iterable[Any]]] = (sql, params)
     cursor = await db.execute(*args)
@@ -47,16 +51,16 @@ async def fetch_one(sql: LiteralString, params: Optional[Iterable[Any]] = None):
     return row
 
 
-async def execute(sql: LiteralString, params: Optional[Iterable[Any]] = None):
+async def execute(sql: LiteralString, params: Optional[Iterable[Any]] = None) -> None:
     db = await get_db()
     args: tuple[LiteralString, Optional[Iterable[Any]]] = (sql, params)
     await db.execute(*args)
     await db.commit()
 
 
-async def _async_close_db():
+async def _async_close_db() -> None:
     await (await get_db()).close()
 
 
-def close_db():
+def close_db() -> None:
     asyncio.run(_async_close_db())
