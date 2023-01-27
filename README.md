@@ -1,5 +1,7 @@
 Telegram-бот для книжного клуба [Ботаним!](https://botanim.to.digital).
 
+![alt text](botanim-logo.svg)
+
 ## Команды бота:
 
 - `/start` — приветственное сообщение
