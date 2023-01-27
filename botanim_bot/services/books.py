@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import LiteralString, cast
 
-from botanim_bot import config
+from botanim_bot import config, message_texts
 from botanim_bot.db import fetch_all
 
 
@@ -61,7 +61,10 @@ def build_category_with_books_string(
             prefix = "◦"
         else:
             prefix = f"{start_index + index}."
-        response.append(f"{prefix} {format_book_name(book.name)}\n")
+        response.append(
+            f"{prefix} {format_book_name(book.name)} "
+            f"{_get_book_already_read_suffix(book)}\n"
+        )
     return "".join(response)
 
 
@@ -167,3 +170,11 @@ async def _get_books_from_db(sql: LiteralString) -> Iterable[Book]:
         )
         for book in books_raw
     ]
+
+
+def _get_book_already_read_suffix(book: Book) -> str:
+    if not book.read_finish:
+        return ""
+    if datetime.strptime(book.read_finish, config.DATE_FORMAT) <= datetime.now():
+        return message_texts.BOOK_ALREADY_READ
+    return ""
