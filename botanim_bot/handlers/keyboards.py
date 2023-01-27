@@ -14,7 +14,7 @@ def get_categories_keyboard(
         [
             InlineKeyboardButton("<", callback_data=f"{prefix}{prev_index}"),
             InlineKeyboardButton(
-                str(current_index + 1) + "/" + str(overall_count), callback_data=" "
+                f"{current_index + 1}/{overall_count}", callback_data=" "
             ),
             InlineKeyboardButton(
                 ">",

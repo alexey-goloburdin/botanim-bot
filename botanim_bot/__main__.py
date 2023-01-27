@@ -33,7 +33,7 @@ def main():
     application.add_handler(
         CallbackQueryHandler(
             handlers.all_books_button,
-            pattern="^" + config.ALL_BOOKS_CALLBACK_PATTERN + r"(\d+)$",
+            pattern=rf"^{config.ALL_BOOKS_CALLBACK_PATTERN}(\d+)$",
         )
     )
 
@@ -45,7 +45,7 @@ def main():
     application.add_handler(
         CallbackQueryHandler(
             handlers.vote_button,
-            pattern="^" + config.VOTE_BOOKS_CALLBACK_PATTERN + r"(\d+)$",
+            pattern=rf"^{config.VOTE_BOOKS_CALLBACK_PATTERN}(\d+)$",
         )
     )
     application.add_handler(

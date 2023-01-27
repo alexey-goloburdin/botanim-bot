@@ -55,7 +55,7 @@ def calculate_category_books_start_index(
 def build_category_with_books_string(
     category: Category, start_index: int | None = None
 ) -> str:
-    response = ["<b>" + category.name + "</b>\n\n"]
+    response = [f"<b>{category.name}</b>\n\n"]
     for index, book in enumerate(category.books, 1):
         if start_index is None:
             prefix = "◦"
@@ -66,45 +66,33 @@ def build_category_with_books_string(
 
 
 async def get_all_books() -> Iterable[Category]:
-    sql = (
-        _get_books_base_sql()
-        + """
-        ORDER BY c."ordering", b."ordering" """
-    )
+    sql = f"""{_get_books_base_sql()}
+              ORDER BY c."ordering", b."ordering" """
     books = await _get_books_from_db(sql)
     return _group_books_by_categories(books)
 
 
 async def get_not_started_books() -> Iterable[Category]:
-    sql = (
-        _get_books_base_sql()
-        + """
-        WHERE b.read_start IS NULL
-        ORDER BY c."ordering", b."ordering" """
-    )
+    sql = f"""{_get_books_base_sql()}
+              WHERE b.read_start IS NULL
+              ORDER BY c."ordering", b."ordering" """
     books = await _get_books_from_db(sql)
     return _group_books_by_categories(books)
 
 
 async def get_already_read_books() -> Iterable[Book]:
-    sql = (
-        _get_books_base_sql()
-        + """
-        WHERE read_start<current_date
-            AND read_finish  <= current_date
-        ORDER BY b.read_start"""
-    )
+    sql = f"""{_get_books_base_sql()}
+              WHERE read_start<current_date
+                  AND read_finish  <= current_date
+              ORDER BY b.read_start"""
     return await _get_books_from_db(sql)
 
 
 async def get_now_reading_books() -> Iterable[Book]:
-    sql = (
-        _get_books_base_sql()
-        + """
-        WHERE read_start<=current_date
-            AND read_finish>=current_date
-        ORDER BY b.read_start"""
-    )
+    sql = f"""{_get_books_base_sql()}
+              WHERE read_start<=current_date
+                  AND read_finish>=current_date
+              ORDER BY b.read_start"""
     return await _get_books_from_db(sql)
 
 

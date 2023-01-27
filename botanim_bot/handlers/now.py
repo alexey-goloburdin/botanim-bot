@@ -13,7 +13,7 @@ async def now(update: Update, context: ContextTypes.DEFAULT_TYPE):
     for index, book in enumerate(now_read_books, 1):
         books.append(
             message_texts.NOW_BOOK.format(
-                index=str(index) + ". " if not just_one_book else "", book=book
+                index=f"{index}{'. ' if not just_one_book else ''}", book=book
             )
         )
     response = message_texts.NOW.format(books="\n".join(books))
