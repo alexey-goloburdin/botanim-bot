@@ -78,6 +78,11 @@ VOTE_RESULTS = """ТОП 10 книг голосования
 
 VOTE_RESULT_BOOK = """{index}. {book_name}. Рейтинг: {book_score}"""
 
+CANT_VOTE = """Упс, голосование доступно только активным участникам Ботаним!
+
+Подключайтесь: https://t.me/+IyGKU9EIGP5jMTky
+"""
+
 ALREADY = """Прочитанные книги:
 
 {books}

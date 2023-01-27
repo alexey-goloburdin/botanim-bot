@@ -19,8 +19,8 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-if not config.TELEGRAM_BOT_TOKEN:
-    exit("Specify TELEGRAM_BOT_TOKEN env variable")
+if not config.TELEGRAM_BOT_TOKEN or not config.TELEGRAM_BOTANIM_CHANNEL_ID:
+    exit("Specify TELEGRAM_BOT_TOKEN and TELEGRAM_BOTANIM_CHANNEL_ID env variables")
 
 
 def main():
