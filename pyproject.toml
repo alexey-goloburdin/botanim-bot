@@ -12,8 +12,6 @@ python-telegram-bot = "==20.0"
 aiosqlite = "==0.18.0"
 python-dotenv = "==0.21.1"
 
-
-
 [tool.poetry.group.dev.dependencies]
 flake8 = "==6.0.0"
 black = "==22.12.0"
