@@ -129,3 +129,4 @@ async def vote(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ),
         parse_mode=telegram.constants.ParseMode.HTML,
     )
+    await send_response(update, context, message_texts.VOTE)
