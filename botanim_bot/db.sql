@@ -40,7 +40,7 @@ create table voting (
 
 create table vote (
   vote_id integer,
-  user_id integer,
+  user_id bigint,
   first_book_id integer,
   second_book_id integer,
   third_book_id integer,
@@ -50,6 +50,10 @@ create table vote (
   foreign key(second_book_id) references book(id),
   foreign key(third_book_id) references book(id),
   primary key(vote_id, user_id)
+);
+
+create table bot_user_in_vote_mode (
+  user_id bigint
 );
 
 insert into book_category (name, ordering) values 

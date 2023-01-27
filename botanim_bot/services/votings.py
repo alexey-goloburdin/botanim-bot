@@ -7,6 +7,7 @@ from botanim_bot.services.books import Book
 from botanim_bot.services.users import insert_user
 from botanim_bot import config
 from botanim_bot.db import fetch_all, execute, fetch_one
+from botanim_bot.services.exceptions import UserInNotVoteMode, NoActualVoting
 
 
 @dataclass
@@ -66,10 +67,12 @@ async def get_actual_voting() -> Voting | None:
 
 async def save_vote(telegram_user_id: int, books: Iterable[Book]) -> None:
     await insert_user(telegram_user_id)
+    if not await is_user_in_vote_mode(telegram_user_id):
+        raise UserInNotVoteMode
+
     actual_voting = await get_actual_voting()
     if actual_voting is None:
-        logger.warning("No actual voting in save_vote()")
-        return
+        raise NoActualVoting
     sql = """
         INSERT OR REPLACE INTO vote
             (vote_id, user_id, first_book_id, second_book_id, third_book_id)
@@ -86,6 +89,7 @@ async def save_vote(telegram_user_id: int, books: Iterable[Book]) -> None:
             "third_book": books[2].id,
         },
     )
+    await remove_user_from_vote_mode(telegram_user_id)
 
 
 async def get_leaders() -> VoteResults | None:
@@ -133,3 +137,24 @@ async def get_leaders() -> VoteResults | None:
             BookVoteResult(book_name=row["book_name"], score=row["score"])
         )
     return vote_results
+
+
+async def is_user_in_vote_mode(user_id: int) -> bool:
+    user_exists = await fetch_one(
+        "select user_id from bot_user_in_vote_mode where user_id=:user_id",
+        {"user_id": user_id},
+    )
+    return user_exists is not None
+
+
+async def set_user_in_vote_mode(user_id: int) -> None:
+    await execute(
+        "insert or ignore into bot_user_in_vote_mode (user_id) values (:user_id)",
+        {"user_id": user_id},
+    )
+
+
+async def remove_user_from_vote_mode(user_id: int) -> None:
+    await execute(
+        "delete from bot_user_in_vote_mode where user_id=:user_id", {"user_id": user_id}
+    )

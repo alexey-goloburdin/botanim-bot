@@ -42,6 +42,7 @@ def main():
     application.add_handler(CommandHandler("now", handlers.now))
 
     application.add_handler(CommandHandler("vote", handlers.vote))
+    application.add_handler(CommandHandler("cancel", handlers.cancel))
     application.add_handler(
         CallbackQueryHandler(
             handlers.vote_button,
