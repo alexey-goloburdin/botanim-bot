@@ -106,4 +106,6 @@ NOW = """Сейчас мы читаем:
 
 NOW_BOOK = """{index}{book.name} (с {book.read_start} по {book.read_finish})"""
 
-BOOK_ALREADY_READ = "— <b>прочитана, доступны комментарии</b>"
+BOOK_READ_STARTED = "читаем сейчас"
+BOOK_READ_FINISHED = "прочитана"
+BOOK_ACTIVE = "— <b>{status}, {read_comments}</b>"

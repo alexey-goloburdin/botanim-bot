@@ -18,6 +18,7 @@ create table book (
   ordering integer not null,
   read_start date,
   read_finish date,
+  read_comments text,
   foreign key(category_id) references book_category(id),
   check (
     (
@@ -205,20 +206,23 @@ insert into book (name, category_id, ordering) values
 update book
 set 
 read_start='2022-11-21',
-read_finish='2022-12-18'
+read_finish='2022-12-18',
+read_comments='книга огонь, в группе доступно 4.5 часа видео-комментариев'
 where name='Чистый код :: Роберт Мартин';
 
 
 update book
 set 
 read_start='2022-12-18',
-read_finish='2022-12-31'
+read_finish='2022-12-31',
+read_comments='неплохой вводный материал по CS, в группе доступно 2 часа видео-комментариев'
 where name='Теоретический минимум по Computer Science. Все что нужно программисту и разработчику :: Фило Владстон Феррейра';
 
 update book
 set 
 read_start='2023-01-01',
-read_finish='2023-02-12'
+read_finish='2023-02-12',
+read_comments='отличная книга по SQL в исполнении постгреса'
 where name='PostgreSQL. Основы языка SQL :: Евгений Моргунов';
 
 
