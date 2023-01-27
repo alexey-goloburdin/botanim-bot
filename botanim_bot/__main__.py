@@ -19,8 +19,8 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-if not config.TELEGRAM_BOT_TOKEN:
-    exit("Specify TELEGRAM_BOT_TOKEN env variable")
+if not config.TELEGRAM_BOT_TOKEN or not config.TELEGRAM_BOTANIM_CHANNEL_ID:
+    exit("Specify TELEGRAM_BOT_TOKEN and TELEGRAM_BOTANIM_CHANNEL_ID env variables")
 
 
 def main():
@@ -42,6 +42,7 @@ def main():
     application.add_handler(CommandHandler("now", handlers.now))
 
     application.add_handler(CommandHandler("vote", handlers.vote))
+    application.add_handler(CommandHandler("cancel", handlers.cancel))
     application.add_handler(
         CallbackQueryHandler(
             handlers.vote_button,

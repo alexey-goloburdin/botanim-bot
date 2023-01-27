@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import LiteralString, cast
 
-from botanim_bot import config
+from botanim_bot import config, message_texts
 from botanim_bot.db import fetch_all
 
 
@@ -15,6 +15,7 @@ class Book:
     category_name: str
     read_start: str | None
     read_finish: str | None
+    read_comments: str | None
 
     def __post_init__(self):
         """Set up read_start and read_finish to needed string format"""
@@ -61,7 +62,10 @@ def build_category_with_books_string(
             prefix = "◦"
         else:
             prefix = f"{start_index + index}."
-        response.append(f"{prefix} {format_book_name(book.name)}\n")
+        response.append(
+            f"{prefix} {format_book_name(book.name)} "
+            f"{_get_book_read_comments(book)}\n"
+        )
     return "".join(response)
 
 
@@ -148,7 +152,8 @@ def _get_books_base_sql(select_param: LiteralString | None = None) -> LiteralStr
             c.id as category_id,
             c.name as category_name,
             {select_param + "," if select_param else ""}
-            b.read_start, b.read_finish
+            b.read_start, b.read_finish,
+            read_comments
         FROM book b
         LEFT JOIN book_category c ON c.id=b.category_id
     """
@@ -164,6 +169,33 @@ async def _get_books_from_db(sql: LiteralString) -> Iterable[Book]:
             category_name=book["category_name"],
             read_start=book["read_start"],
             read_finish=book["read_finish"],
+            read_comments=book["read_comments"],
         )
         for book in books_raw
     ]
+
+
+def _get_book_read_comments(book: Book) -> str:
+    if _is_book_started(book):
+        if not _is_book_finished(book):
+            status = message_texts.BOOK_READ_STARTED
+        else:
+            status = message_texts.BOOK_READ_FINISHED
+        return message_texts.BOOK_ACTIVE.format(
+            read_comments=book.read_comments, status=status
+        )
+    return ""
+
+
+def _is_book_started(book: Book) -> bool:
+    return (
+        book.read_start is not None
+        and datetime.strptime(book.read_start, config.DATE_FORMAT) <= datetime.now()
+    )
+
+
+def _is_book_finished(book: Book) -> bool:
+    return (
+        book.read_finish is not None
+        and datetime.strptime(book.read_finish, config.DATE_FORMAT) <= datetime.now()
+    )

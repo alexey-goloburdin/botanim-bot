@@ -7,6 +7,11 @@ from botanim_bot.services.books import Book
 from botanim_bot.services.users import insert_user
 from botanim_bot import config
 from botanim_bot.db import fetch_all, execute, fetch_one
+from botanim_bot.services.exceptions import UserInNotVoteMode, NoActualVoting
+from botanim_bot.services.vote_mode import (
+    is_user_in_vote_mode,
+    remove_user_from_vote_mode,
+)
 
 
 @dataclass
@@ -66,16 +71,19 @@ async def get_actual_voting() -> Voting | None:
 
 async def save_vote(telegram_user_id: int, books: Iterable[Book]) -> None:
     await insert_user(telegram_user_id)
+    if not await is_user_in_vote_mode(telegram_user_id):
+        raise UserInNotVoteMode
+
     actual_voting = await get_actual_voting()
     if actual_voting is None:
-        logger.warning("No actual voting in save_vote()")
-        return
+        raise NoActualVoting
     sql = """
         INSERT OR REPLACE INTO vote
             (vote_id, user_id, first_book_id, second_book_id, third_book_id)
         VALUES (:vote_id, :user_id, :first_book, :second_book, :third_book)
         """
     books = tuple(books)
+    await execute("begin")
     await execute(
         sql,
         {
@@ -85,7 +93,10 @@ async def save_vote(telegram_user_id: int, books: Iterable[Book]) -> None:
             "second_book": books[1].id,
             "third_book": books[2].id,
         },
+        autocommit=False,
     )
+    await remove_user_from_vote_mode(telegram_user_id)
+    await execute("commit")
 
 
 async def get_leaders() -> VoteResults | None:
