@@ -1,4 +1,4 @@
-name: Lint code
+name: Lint and check types
 
 on: [push]
 
@@ -30,3 +30,7 @@ jobs:
     - name: Linting code by flake8
       run: |
         poetry run flake8 --show-source --statistics
+        
+    - name: Check types by mypy
+      run: |
+        poetry run mypy .
