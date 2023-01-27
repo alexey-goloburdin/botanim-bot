@@ -11,10 +11,10 @@ async def now(update: Update, context: ContextTypes.DEFAULT_TYPE):
     books = []
     just_one_book = len(tuple(now_read_books)) == 1
     for index, book in enumerate(now_read_books, 1):
-        books.append(
-            message_texts.NOW_BOOK.format(
-                index=f"{index}{'. ' if not just_one_book else ''}", book=book
-            )
-        )
+        if not just_one_book:
+            prefix = f"{index}. "
+        else:
+            prefix = ""
+        books.append(message_texts.NOW_BOOK.format(index=f"{prefix}", book=book))
     response = message_texts.NOW.format(books="\n".join(books))
     await send_response(update, context, response)

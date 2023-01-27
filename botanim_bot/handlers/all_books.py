@@ -19,7 +19,9 @@ async def all_books(update: Update, context: ContextTypes.DEFAULT_TYPE):
         context,
         build_category_with_books_string(categories_with_books[0]),
         get_categories_keyboard(
-            0, len(categories_with_books), config.ALL_BOOKS_CALLBACK_PATTERN
+            current_category_index=0,
+            categories_count=len(categories_with_books),
+            callback_prefix=config.ALL_BOOKS_CALLBACK_PATTERN,
         ),
     )
 
@@ -38,9 +40,9 @@ async def all_books_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
             categories_with_books[current_category_index]
         ),
         reply_markup=get_categories_keyboard(
-            current_category_index,
-            len(categories_with_books),
-            config.ALL_BOOKS_CALLBACK_PATTERN,
+            current_category_index=current_category_index,
+            categories_count=len(categories_with_books),
+            callback_prefix=config.ALL_BOOKS_CALLBACK_PATTERN,
         ),
         parse_mode=telegram.constants.ParseMode.HTML,
     )
