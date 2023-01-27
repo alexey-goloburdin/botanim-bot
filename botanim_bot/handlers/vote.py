@@ -17,11 +17,10 @@ from botanim_bot.handlers.keyboards import get_categories_keyboard
 from botanim_bot.services.num_to_words import books_to_words
 from botanim_bot.handlers.response import send_response
 from botanim_bot.services.validation import is_user_in_channel
+from botanim_bot.services.vote_mode import is_user_in_vote_mode, set_user_in_vote_mode
 from botanim_bot.services.votings import (
     get_actual_voting,
-    is_user_in_vote_mode,
     save_vote,
-    set_user_in_vote_mode,
 )
 
 
