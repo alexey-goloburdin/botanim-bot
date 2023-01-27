@@ -1,7 +1,6 @@
 import re
 from typing import cast
 
-
 import logging
 import telegram
 from telegram import Chat, InlineKeyboardButton, InlineKeyboardMarkup, Update
@@ -14,7 +13,7 @@ from telegram.ext import (
     filters,
 )
 
-from books import (
+from .books import (
     get_all_books,
     get_already_read_books,
     get_now_reading_books,
@@ -24,10 +23,10 @@ from books import (
     calculate_category_books_start_index,
     format_book_name,
 )
-from num_to_words import books_to_words
-from votings import save_vote, get_actual_voting, get_leaders
-import config
-import message_texts
+from .num_to_words import books_to_words
+from .votings import save_vote, get_actual_voting, get_leaders
+from . import config
+from . import message_texts
 
 
 logging.basicConfig(
@@ -288,7 +287,3 @@ def main():
     application.add_handler(CommandHandler("voteresults", vote_results))
 
     application.run_polling()
-
-
-if __name__ == "__main__":
-    main()

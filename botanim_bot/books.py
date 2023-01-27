@@ -5,7 +5,7 @@ from typing import LiteralString
 
 import aiosqlite
 
-import config
+from . import config
 
 
 @dataclass

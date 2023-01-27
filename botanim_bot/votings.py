@@ -4,10 +4,10 @@ import logging
 from typing import Iterable
 
 import aiosqlite
-from books import Book
-from users import insert_user
 
-import config
+from .books import Book
+from .users import insert_user
+from . import config
 
 
 @dataclass

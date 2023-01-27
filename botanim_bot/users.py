@@ -1,6 +1,6 @@
 import aiosqlite
 
-import config
+from . import config
 
 
 async def insert_user(telegram_user_id: int) -> None:

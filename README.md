@@ -28,7 +28,7 @@ cp .env.example .env
 ```bash
 poetry install
 cd botanim_bot
-poetry run python botanim_bot/bot.py
+poetry run python -m botanim_bot
 ```
 
 ## TODO
