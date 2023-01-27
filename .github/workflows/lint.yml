@@ -17,11 +17,6 @@ jobs:
       run: |
         pip install pipx
         pipx install poetry
-        
-    - name: Install poetry
-      run: |
-        pip install pipx
-        pipx install poetry
     
     - name: Install dependencies
       run: |
