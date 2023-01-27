@@ -31,7 +31,7 @@ class Book:
 class Category:
     id: int
     name: str
-    books: Iterable[Book]
+    books: list[Book]
 
 
 def format_book_name(book_name_with_author: str) -> str:
