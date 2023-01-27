@@ -7,7 +7,7 @@ import aiosqlite
 
 from .books import Book
 from .users import insert_user
-from . import config
+from .. import config
 
 
 @dataclass

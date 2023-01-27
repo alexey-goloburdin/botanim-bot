@@ -3,7 +3,7 @@ from telegram.ext import ContextTypes
 
 from .response import send_response
 from .. import message_texts
-from ..books import get_already_read_books
+from ..services.books import get_already_read_books
 
 
 async def already(update: Update, context: ContextTypes.DEFAULT_TYPE):

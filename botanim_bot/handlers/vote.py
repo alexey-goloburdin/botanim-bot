@@ -8,15 +8,15 @@ from telegram.ext import ContextTypes
 from .response import send_response
 from .keyboards import get_categories_keyboard
 from .. import message_texts
-from ..books import (
+from ..services.books import (
     build_category_with_books_string,
     calculate_category_books_start_index,
     get_books_by_numbers,
     get_not_started_books,
 )
 from .. import config
-from ..votings import get_actual_voting, save_vote
-from ..num_to_words import books_to_words
+from ..services.votings import get_actual_voting, save_vote
+from ..services.num_to_words import books_to_words
 
 
 async def vote_process(update: Update, context: ContextTypes.DEFAULT_TYPE):

@@ -3,8 +3,8 @@ from telegram.ext import ContextTypes
 
 from .response import send_response
 from .. import message_texts
-from ..books import format_book_name
-from ..votings import get_leaders
+from ..services.books import format_book_name
+from ..services.votings import get_leaders
 
 
 async def vote_results(update: Update, context: ContextTypes.DEFAULT_TYPE):

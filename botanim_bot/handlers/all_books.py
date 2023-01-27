@@ -5,7 +5,7 @@ from telegram.ext import ContextTypes
 
 from .response import send_response
 from .keyboards import get_categories_keyboard
-from ..books import build_category_with_books_string, get_all_books
+from ..services.books import build_category_with_books_string, get_all_books
 from .. import config
 
 
