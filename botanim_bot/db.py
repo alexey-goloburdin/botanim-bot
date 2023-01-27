@@ -17,18 +17,11 @@ async def get_db() -> aiosqlite.Connection:
 async def fetch_all(
     sql: LiteralString, params: Optional[Iterable[Any]] = None
 ) -> list[dict]:
-    results = []
-    db = await get_db()
-    args: tuple[LiteralString, Optional[Iterable[Any]]] = (sql, params)
-    cursor = await db.execute(*args)
-    column_names = [d[0] for d in cursor.description]
-    db.row_factory = aiosqlite.Row
+    cursor = await _get_cursor(sql, params)
     rows = await cursor.fetchall()
+    results = []
     for row_ in rows:
-        row = {}
-        for index, column_name in enumerate(column_names):
-            row[column_name] = row_[index]
-        results.append(row)
+        results.append(_get_result_with_column_names(cursor, row_))
     await cursor.close()
     return results
 
@@ -36,17 +29,11 @@ async def fetch_all(
 async def fetch_one(
     sql: LiteralString, params: Optional[Iterable[Any]] = None
 ) -> dict | None:
-    db = await get_db()
-    args: tuple[LiteralString, Optional[Iterable[Any]]] = (sql, params)
-    cursor = await db.execute(*args)
-    column_names = [d[0] for d in cursor.description]
-    db.row_factory = aiosqlite.Row
+    cursor = await _get_cursor(sql, params)
     row_ = await cursor.fetchone()
     if not row_:
         return None
-    row = {}
-    for index, column_name in enumerate(column_names):
-        row[column_name] = row_[index]
+    row = _get_result_with_column_names(cursor, row_)
     await cursor.close()
     return row
 
@@ -58,9 +45,27 @@ async def execute(sql: LiteralString, params: Optional[Iterable[Any]] = None) ->
     await db.commit()
 
 
+def close_db() -> None:
+    asyncio.run(_async_close_db())
+
+
 async def _async_close_db() -> None:
     await (await get_db()).close()
 
 
-def close_db() -> None:
-    asyncio.run(_async_close_db())
+async def _get_cursor(
+    sql: LiteralString, params: Optional[Iterable[Any]]
+) -> aiosqlite.Cursor:
+    db = await get_db()
+    args: tuple[LiteralString, Optional[Iterable[Any]]] = (sql, params)
+    cursor = await db.execute(*args)
+    db.row_factory = aiosqlite.Row
+    return cursor
+
+
+def _get_result_with_column_names(cursor: aiosqlite.Cursor, row: aiosqlite.Row) -> dict:
+    column_names = [d[0] for d in cursor.description]
+    resulting_row = {}
+    for index, column_name in enumerate(column_names):
+        resulting_row[column_name] = row[index]
+    return resulting_row
