@@ -7,10 +7,10 @@ from telegram.ext import (
     filters,
 )
 
-from .db import close_db
+from botanim_bot.db import close_db
 
-from . import config
-from . import handlers
+from botanim_bot import config
+from botanim_bot import handlers
 
 
 logging.basicConfig(

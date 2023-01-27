@@ -3,10 +3,10 @@ from datetime import datetime
 import logging
 from typing import Iterable
 
-from .books import Book
-from .users import insert_user
-from .. import config
-from ..db import fetch_all, execute, fetch_one
+from botanim_bot.services.books import Book
+from botanim_bot.services.users import insert_user
+from botanim_bot import config
+from botanim_bot.db import fetch_all, execute, fetch_one
 
 
 @dataclass

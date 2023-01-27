@@ -3,8 +3,8 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import LiteralString, cast
 
-from .. import config
-from ..db import fetch_all
+from botanim_bot import config
+from botanim_bot.db import fetch_all
 
 
 @dataclass

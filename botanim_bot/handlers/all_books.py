@@ -3,10 +3,10 @@ from telegram import Update
 from telegram.ext import ContextTypes
 
 
-from .response import send_response
-from .keyboards import get_categories_keyboard
-from ..services.books import build_category_with_books_string, get_all_books
-from .. import config
+from botanim_bot.handlers.response import send_response
+from botanim_bot.handlers.keyboards import get_categories_keyboard
+from botanim_bot.services.books import build_category_with_books_string, get_all_books
+from botanim_bot import config
 
 
 async def all_books(update: Update, context: ContextTypes.DEFAULT_TYPE):

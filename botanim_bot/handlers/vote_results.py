@@ -1,10 +1,10 @@
 from telegram import Update
 from telegram.ext import ContextTypes
 
-from .response import send_response
-from .. import message_texts
-from ..services.books import format_book_name
-from ..services.votings import get_leaders
+from botanim_bot.handlers.response import send_response
+from botanim_bot import message_texts
+from botanim_bot.services.books import format_book_name
+from botanim_bot.services.votings import get_leaders
 
 
 async def vote_results(update: Update, context: ContextTypes.DEFAULT_TYPE):

@@ -1,4 +1,4 @@
-from ..db import execute
+from botanim_bot.db import execute
 
 
 async def insert_user(telegram_user_id: int) -> None:

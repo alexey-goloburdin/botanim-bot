@@ -5,18 +5,18 @@ import telegram
 from telegram import Update, User
 from telegram.ext import ContextTypes
 
-from .response import send_response
-from .keyboards import get_categories_keyboard
-from .. import message_texts
-from ..services.books import (
+from botanim_bot.handlers.response import send_response
+from botanim_bot.handlers.keyboards import get_categories_keyboard
+from botanim_bot import message_texts
+from botanim_bot.services.books import (
     build_category_with_books_string,
     calculate_category_books_start_index,
     get_books_by_numbers,
     get_not_started_books,
 )
-from .. import config
-from ..services.votings import get_actual_voting, save_vote
-from ..services.num_to_words import books_to_words
+from botanim_bot import config
+from botanim_bot.services.votings import get_actual_voting, save_vote
+from botanim_bot.services.num_to_words import books_to_words
 
 
 async def vote_process(update: Update, context: ContextTypes.DEFAULT_TYPE):

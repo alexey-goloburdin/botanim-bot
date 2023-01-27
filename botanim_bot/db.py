@@ -4,7 +4,7 @@ from typing import Any, LiteralString, Optional
 
 import aiosqlite
 
-from . import config
+from botanim_bot import config
 
 
 async def get_db() -> aiosqlite.Connection:
