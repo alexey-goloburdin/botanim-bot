@@ -173,8 +173,12 @@ async def _get_books_from_db(sql: LiteralString) -> Iterable[Book]:
 
 
 def _get_book_already_read_suffix(book: Book) -> str:
-    if not book.read_finish:
-        return ""
-    if datetime.strptime(book.read_finish, config.DATE_FORMAT) <= datetime.now():
+    if _is_book_already_read(book):
         return message_texts.BOOK_ALREADY_READ
     return ""
+
+
+def _is_book_already_read(book: Book) -> bool:
+    if not book.read_finish:
+        return False
+    return datetime.strptime(book.read_finish, config.DATE_FORMAT) <= datetime.now()
