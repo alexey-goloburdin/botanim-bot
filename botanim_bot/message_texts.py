@@ -67,9 +67,28 @@ SUCCESS_VOTE = """Ура, ты выбрал {books_count}:
 /vote
 """
 
+SUCCESS_VOTE_BOOK = """{index}. {book.name}"""
+
 VOTE_RESULTS = """ТОП 10 книг голосования
 
 {books}
 
 Даты голосования: с {voting_start} по {voting_finish}
 """
+
+VOTE_RESULT_BOOK = """{index}. {book_name}. Рейтинг: {book_score}"""
+
+ALREADY = """Прочитанные книги:
+
+{books}
+"""
+
+ALREADY_BOOK = """{index}. {book.name} (читали с {book.read_start} \
+по {book.read_finish})"""
+
+NOW = """Сейчас мы читаем:
+
+{books}
+"""
+
+NOW_BOOK = """{index}{book.name} (с {book.read_start} по {book.read_finish})"""

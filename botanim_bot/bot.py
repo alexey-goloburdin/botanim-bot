@@ -3,7 +3,7 @@ from typing import cast
 
 import logging
 import telegram
-from telegram import Chat, InlineKeyboardButton, InlineKeyboardMarkup, Update
+from telegram import Chat, InlineKeyboardButton, InlineKeyboardMarkup, Update, User
 from telegram.ext import (
     ApplicationBuilder,
     CallbackQueryHandler,
@@ -49,25 +49,24 @@ async def help(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def already(update: Update, context: ContextTypes.DEFAULT_TYPE):
     already_read_books = await get_already_read_books()
-    response = "Прочитанные книги:\n\n"
+    books = []
     for index, book in enumerate(already_read_books, 1):
-        response += (
-            f"{index}. {book.name} "
-            f"(читали с {book.read_start} по {book.read_finish})\n"
-        )
+        books.append(message_texts.ALREADY_BOOK.format(index=index, book=book))
+    response = message_texts.ALREADY.format(books="\n".join(books))
     await _send_response(update, context, response)
 
 
 async def now(update: Update, context: ContextTypes.DEFAULT_TYPE):
     now_read_books = await get_now_reading_books()
-    response = "Сейчас мы читаем:\n\n"
-    just_one_book = len(now_read_books) == 1
+    books = []
+    just_one_book = len(tuple(now_read_books)) == 1
     for index, book in enumerate(now_read_books, 1):
-        response += (
-            f"{str(index) + '. ' if not just_one_book else ''}"
-            f"{book.name} "
-            f"(с {book.read_start} по {book.read_finish})\n"
+        books.append(
+            message_texts.NOW_BOOK.format(
+                index=str(index) + ". " if not just_one_book else "", book=book
+            )
         )
+    response = message_texts.NOW.format(books="\n".join(books))
     await _send_response(update, context, response)
 
 
@@ -90,12 +89,13 @@ async def vote_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
 
-    # TODO move to message_texts module all hardcoded texts
-    await save_vote(update.effective_user.id, books)
+    await save_vote(cast(User, update.effective_user).id, books)
 
     books_formatted = []
     for index, book in enumerate(books, 1):
-        books_formatted.append(f"{index}. {book.name}")
+        books_formatted.append(
+            message_texts.SUCCESS_VOTE_BOOK.format(index=index, book=book)
+        )
     books_count = len(books_formatted)
     await _send_response(
         update,
@@ -116,7 +116,11 @@ async def vote_results(update: Update, context: ContextTypes.DEFAULT_TYPE):
     books = []
     for index, book in enumerate(leaders.leaders, 1):
         books.append(
-            f"{index}. {format_book_name(book.book_name)}. " f"Рейтинг: {book.score}"
+            message_texts.VOTE_RESULT_BOOK.format(
+                index=index,
+                book_name=format_book_name(book.book_name),
+                book_score=book.score,
+            )
         )
     response = message_texts.VOTE_RESULTS.format(
         books="\n".join(books),
