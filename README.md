@@ -34,7 +34,6 @@ poetry run python -m botanim_bot
 ## TODO
 
 - Deploy
-- Добавить время разборов по прочитанному
 - Добавить отзывы
 
 ## Ideas
