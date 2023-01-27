@@ -10,12 +10,13 @@ from botanim_bot import config
 async def get_db() -> aiosqlite.Connection:
     if not getattr(get_db, "db", None):
         db = await aiosqlite.connect(config.SQLITE_DB_FILE)
-        get_db.db = db
-    return get_db.db
+        setattr(get_db, "db", db)
+
+    return getattr(get_db, "db")
 
 
 async def fetch_all(
-    sql: LiteralString, params: Optional[Iterable[Any]] = None
+        sql: LiteralString, params: Optional[Iterable[Any]] = None
 ) -> list[dict]:
     cursor = await _get_cursor(sql, params)
     rows = await cursor.fetchall()
@@ -27,7 +28,7 @@ async def fetch_all(
 
 
 async def fetch_one(
-    sql: LiteralString, params: Optional[Iterable[Any]] = None
+        sql: LiteralString, params: Optional[Iterable[Any]] = None
 ) -> dict | None:
     cursor = await _get_cursor(sql, params)
     row_ = await cursor.fetchone()
@@ -39,10 +40,10 @@ async def fetch_one(
 
 
 async def execute(
-    sql: LiteralString,
-    params: Optional[Iterable[Any]] = None,
-    *,
-    autocommit: bool = True
+        sql: LiteralString,
+        params: Optional[Iterable[Any]] = None,
+        *,
+        autocommit: bool = True
 ) -> None:
     db = await get_db()
     args: tuple[LiteralString, Optional[Iterable[Any]]] = (sql, params)
@@ -60,7 +61,7 @@ async def _async_close_db() -> None:
 
 
 async def _get_cursor(
-    sql: LiteralString, params: Optional[Iterable[Any]]
+        sql: LiteralString, params: Optional[Iterable[Any]]
 ) -> aiosqlite.Cursor:
     db = await get_db()
     args: tuple[LiteralString, Optional[Iterable[Any]]] = (sql, params)

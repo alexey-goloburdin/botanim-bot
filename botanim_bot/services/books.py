@@ -31,7 +31,7 @@ class Book:
 class Category:
     id: int
     name: str
-    books: Iterable[Book]
+    books: list[Book]
 
 
 def format_book_name(book_name_with_author: str) -> str:
@@ -50,7 +50,9 @@ def calculate_category_books_start_index(
         if category.id != current_category.id:
             start_index += len(tuple(category.books))
         else:
-            return start_index
+            break
+
+    return start_index
 
 
 def build_category_with_books_string(
@@ -106,14 +108,15 @@ async def get_books_by_numbers(numbers: Iterable[int]) -> Iterable[Book]:
     hardcoded_sql_values = []
     for index, number in enumerate(numbers, 1):
         hardcoded_sql_values.append(f"({number}, {index})")
-    hardcoded_sql_values = ", ".join(hardcoded_sql_values)
+
+    output_hardcoded_sql_values = ", ".join(hardcoded_sql_values)
 
     base_sql = _get_books_base_sql(
         'ROW_NUMBER() over (order by c."ordering", b."ordering") as idx'
     )
     sql = f"""
         SELECT t2.* FROM (
-          VALUES {hardcoded_sql_values}
+          VALUES {output_hardcoded_sql_values}
         ) t0
         INNER JOIN
         (
