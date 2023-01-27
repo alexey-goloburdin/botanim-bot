@@ -77,14 +77,17 @@ SUCCESS_VOTE = """Ура, ты выбрал {books_count}:
 
 SUCCESS_VOTE_BOOK = """{index}. {book.name}"""
 
-VOTE_RESULTS = """ТОП 10 книг голосования
+VOTE_RESULTS = """<b>ТОП книг голосования</b>
 
 {books}
 
-Даты голосования: с {voting_start} по {voting_finish}
+<i>Даты голосования: с {voting_start} по {voting_finish}
+Голосов: {votes_count}</i>
 """
 
-VOTE_RESULT_BOOK = """{index}. {book_name}. Рейтинг: {book_score}"""
+VOTE_RESULT_BOOK = """{index}. {books}"""
+VOTE_RESULT_SEVERAL_BOOKS = "Несколько книг занимают это место:\n{books}"
+VOTE_RESULTS_ZERO_VOTES = "Пока никто не проголосовал, ты можешь стать первым, вжух!"
 
 CANT_VOTE = """Упс, голосование доступно только активным участникам Ботаним!
 
