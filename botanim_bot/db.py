@@ -38,11 +38,17 @@ async def fetch_one(
     return row
 
 
-async def execute(sql: LiteralString, params: Optional[Iterable[Any]] = None) -> None:
+async def execute(
+    sql: LiteralString,
+    params: Optional[Iterable[Any]] = None,
+    *,
+    autocommit: bool = True
+) -> None:
     db = await get_db()
     args: tuple[LiteralString, Optional[Iterable[Any]]] = (sql, params)
     await db.execute(*args)
-    await db.commit()
+    if autocommit:
+        await db.commit()
 
 
 def close_db() -> None:

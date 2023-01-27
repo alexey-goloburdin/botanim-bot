@@ -83,6 +83,7 @@ async def save_vote(telegram_user_id: int, books: Iterable[Book]) -> None:
         VALUES (:vote_id, :user_id, :first_book, :second_book, :third_book)
         """
     books = tuple(books)
+    await execute("begin")
     await execute(
         sql,
         {
@@ -92,8 +93,10 @@ async def save_vote(telegram_user_id: int, books: Iterable[Book]) -> None:
             "second_book": books[1].id,
             "third_book": books[2].id,
         },
+        autocommit=False,
     )
     await remove_user_from_vote_mode(telegram_user_id)
+    await execute("commit")
 
 
 async def get_leaders() -> VoteResults | None:

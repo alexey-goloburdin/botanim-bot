@@ -18,5 +18,7 @@ async def set_user_in_vote_mode(user_id: int) -> None:
 
 async def remove_user_from_vote_mode(user_id: int) -> None:
     await execute(
-        "delete from bot_user_in_vote_mode where user_id=:user_id", {"user_id": user_id}
+        "delete from bot_user_in_vote_mode where user_id=:user_id",
+        {"user_id": user_id},
+        autocommit=False,
     )
