@@ -1,6 +1,6 @@
 Telegram-бот для книжного клуба [Ботаним!](https://botanim.to.digital).
 
-![alt text](botanim-logo.svg)
+[![alt text](botanim-logo.svg)](http://google.com.au/)
 
 ## Команды бота:
 
