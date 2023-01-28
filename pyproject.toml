@@ -22,3 +22,6 @@ pyright = "==1.1.291"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pyright]
+reportUnnecessaryTypeIgnoreComment="warning"
