@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import TypedDict, cast
 
-import schulze
+import schulze  # type: ignore
 
 from botanim_bot import config
 from botanim_bot.db import fetch_all
@@ -71,22 +71,26 @@ async def _get_vote_results(vote_id: int) -> list[VoteRow]:
 
 def _build_data_for_schulze(
     rows,
-) -> tuple[set[int], list[tuple[list[int], int]]]:  # books  # weighted_ranks
-    books = []
-    weighted_ranks = []
+) -> tuple[set[int],
+           list[tuple[tuple[list[int],
+                            list[int],
+                            list[int]],
+                      int]]]:  # books  # weighted_ranks
+    books: set[int] = set()
+    weighted_ranks = list()
+
     for row in rows:
-        books.extend(
+        books.update(
             [row["first_book_id"], row["second_book_id"], row["third_book_id"]]
         )
-        weighted_ranks.append(
+
+        weighted_ranks.append((
             (
-                (
-                    [row["first_book_id"]],
-                    [row["second_book_id"]],
-                    [row["third_book_id"]],
-                ),
-                row["votes_count"],
-            )
-        )
-    books = set(books)
+                [row["first_book_id"]],
+                [row["second_book_id"]],
+                [row["third_book_id"]],
+            ),
+            row["votes_count"],
+        ))
+
     return books, weighted_ranks
