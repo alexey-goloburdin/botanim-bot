@@ -17,6 +17,7 @@ def _add_remaining_ranks(d, candidate, remaining_ranks, weight):
 
 def _add_ranks_to_d(d, ranks, weight, candidates):
     if len(ranks) < len(candidates):
+        ranks = list(ranks)
         for candidat in candidates:
             if (candidat,) not in ranks:
                 ranks.append((candidat,))
