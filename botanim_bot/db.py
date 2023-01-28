@@ -1,6 +1,6 @@
 import asyncio
 from collections.abc import Iterable
-from typing import Any, LiteralString, Optional
+from typing import Any, LiteralString
 
 import aiosqlite
 
@@ -16,7 +16,7 @@ async def get_db() -> aiosqlite.Connection:
 
 
 async def fetch_all(
-        sql: LiteralString, params: Optional[Iterable[Any]] = None
+    sql: LiteralString, params: Iterable[Any] | None = None
 ) -> list[dict]:
     cursor = await _get_cursor(sql, params)
     rows = await cursor.fetchall()
@@ -28,7 +28,7 @@ async def fetch_all(
 
 
 async def fetch_one(
-        sql: LiteralString, params: Optional[Iterable[Any]] = None
+    sql: LiteralString, params: Iterable[Any] | None = None
 ) -> dict | None:
     cursor = await _get_cursor(sql, params)
     row_ = await cursor.fetchone()
@@ -40,13 +40,13 @@ async def fetch_one(
 
 
 async def execute(
-        sql: LiteralString,
-        params: Optional[Iterable[Any]] = None,
-        *,
-        autocommit: bool = True
+    sql: LiteralString,
+    params: Iterable[Any] | None = None,
+    *,
+    autocommit: bool = True
 ) -> None:
     db = await get_db()
-    args: tuple[LiteralString, Optional[Iterable[Any]]] = (sql, params)
+    args: tuple[LiteralString, Iterable[Any] | None] = (sql, params)
     await db.execute(*args)
     if autocommit:
         await db.commit()
@@ -61,10 +61,10 @@ async def _async_close_db() -> None:
 
 
 async def _get_cursor(
-        sql: LiteralString, params: Optional[Iterable[Any]]
+    sql: LiteralString, params: Iterable[Any] | None
 ) -> aiosqlite.Cursor:
     db = await get_db()
-    args: tuple[LiteralString, Optional[Iterable[Any]]] = (sql, params)
+    args: tuple[LiteralString, Iterable[Any] | None] = (sql, params)
     cursor = await db.execute(*args)
     db.row_factory = aiosqlite.Row
     return cursor
