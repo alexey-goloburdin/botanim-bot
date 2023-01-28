@@ -26,6 +26,6 @@ jobs:
       run: |
         poetry run flake8 --show-source --statistics
         
-    - name: Check types by mypy
+    - name: Check types by pyright
       run: |
-        poetry run mypy .
+        poetry run pyright
