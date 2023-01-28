@@ -133,6 +133,15 @@ async def get_books_by_numbers(numbers: Iterable[int]) -> Iterable[Book]:
     return books
 
 
+async def get_book_names_by_ids(ids: Iterable[int]) -> dict[int, str]:
+    int_ids = tuple(map(str, map(int, ids)))
+    sql = f"""{_get_books_base_sql()}
+              WHERE b.id IN ({",".join(int_ids)})
+              ORDER BY c."name", b."name" """
+    books = await _get_books_from_db(cast(LiteralString, sql))
+    return {book.id: book.name for book in books}
+
+
 def _group_books_by_categories(books: Iterable[Book]) -> Iterable[Category]:
     categories = []
     category_id = None

@@ -6,7 +6,7 @@ from typing import Iterable
 from botanim_bot.services.books import Book
 from botanim_bot.services.users import insert_user
 from botanim_bot import config
-from botanim_bot.db import fetch_all, execute, fetch_one
+from botanim_bot.db import execute, fetch_one
 from botanim_bot.services.exceptions import UserInNotVoteMode, NoActualVoting
 from botanim_bot.services.vote_mode import (
     is_user_in_vote_mode,
@@ -14,10 +14,7 @@ from botanim_bot.services.vote_mode import (
 )
 
 
-@dataclass
-class BookVoteResult:
-    book_name: str
-    score: int
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -39,15 +36,6 @@ class Voting:
             except ValueError:
                 continue
             setattr(self, field, value)
-
-
-@dataclass
-class VoteResults:
-    voting: Voting
-    leaders: list[BookVoteResult]
-
-
-logger = logging.getLogger(__name__)
 
 
 async def get_actual_voting() -> Voting | None:
@@ -97,50 +85,3 @@ async def save_vote(telegram_user_id: int, books: Iterable[Book]) -> None:
     )
     await remove_user_from_vote_mode(telegram_user_id)
     await execute("commit")
-
-
-async def get_leaders() -> VoteResults | None:
-    actual_voting = await get_actual_voting()
-    if actual_voting is None:
-        return None
-    vote_results = VoteResults(
-        voting=Voting(
-            voting_start=actual_voting.voting_start,
-            voting_finish=actual_voting.voting_finish,
-            id=actual_voting.id,
-        ),
-        leaders=[],
-    )
-    sql = """
-        SELECT t2.*, b.name as book_name
-        FROM (SELECT t.book_id, sum(t.score) as score from (
-            SELECT first_book_id AS book_id, 3*count(*) AS score
-            FROM vote v
-            WHERE vote_id=(:voting_id)
-            GROUP BY first_book_id
-
-            UNION
-
-            SELECT second_book_id AS book_id, 2*count(*) AS score
-            FROM vote v
-            WHERE vote_id=(:voting_id)
-            GROUP BY second_book_id
-
-            UNION
-
-            SELECT third_book_id AS book_id, 1*count(*) AS score
-            FROM vote v
-            WHERE vote_id=(:voting_id)
-            GROUP BY third_book_id
-        ) t
-        GROUP BY book_id
-        ORDER BY sum(t.score) DESC
-        LIMIT 10) t2
-        LEFT JOIN book b on b.id=t2.book_id
-    """
-    rows = await fetch_all(sql, {"voting_id": actual_voting.id})
-    for row in rows:
-        vote_results.leaders.append(
-            BookVoteResult(book_name=row["book_name"], score=row["score"])
-        )
-    return vote_results

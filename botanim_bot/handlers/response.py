@@ -13,6 +13,7 @@ async def send_response(
 ) -> None:
     args = {
         "chat_id": _get_chat_id(update),
+        "disable_web_page_preview": True,
         "text": response,
         "parse_mode": telegram.constants.ParseMode.HTML,
     }
