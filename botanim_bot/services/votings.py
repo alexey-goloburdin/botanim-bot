@@ -38,6 +38,13 @@ class Voting:
             setattr(self, field, value)
 
 
+@dataclass
+class Vote:
+    first_book_name: str
+    second_book_name: str
+    third_book_name: str
+
+
 async def get_actual_voting() -> Voting | None:
     sql = """
         SELECT id, voting_start, voting_finish
@@ -85,3 +92,29 @@ async def save_vote(telegram_user_id: int, books: Iterable[Book]) -> None:
     )
     await remove_user_from_vote_mode(telegram_user_id)
     await execute("commit")
+
+
+async def get_user_actual_vote(user_id: int) -> Vote | None:
+    actual_voting = await get_actual_voting()
+    if not actual_voting:
+        return None
+    sql = """
+        SELECT
+            b1.name AS first_book_name,
+            b2.name AS second_book_name,
+            b3.name AS third_book_name
+        FROM vote v
+        LEFT JOIN book b1 ON v.first_book_id =b1.id
+        LEFT JOIN book b2 ON v.second_book_id =b2.id
+        LEFT JOIN book b3 ON v.third_book_id =b3.id
+        WHERE v.user_id=:user_id
+            AND v.vote_id=:voting_id
+    """
+    vote = await fetch_one(sql, {"user_id": user_id, "voting_id": actual_voting.id})
+    if not vote:
+        return None
+    return Vote(
+        first_book_name=vote["first_book_name"],
+        second_book_name=vote["second_book_name"],
+        third_book_name=vote["third_book_name"],
+    )

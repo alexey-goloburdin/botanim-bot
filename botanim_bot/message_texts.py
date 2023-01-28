@@ -91,6 +91,8 @@ SUCCESS_VOTE = """Ура, ты выбрал {books_count}:
 Ты можешь переголосовать до тех пор, пока голосование активно. Для этого просто \
 проголосуй повторно с командой
 /vote
+
+Посмотреть текущие результаты: /voteresults
 """
 
 SUCCESS_VOTE_BOOK = """{index}. {book.name}"""
@@ -101,9 +103,19 @@ VOTE_RESULTS = """<b>ТОП книг голосования</b>
 
 <i>Даты голосования: с {voting_start} по {voting_finish}
 Голосов: {votes_count}</i>
+
+{your_vote}
 """
 
-VOTE_RESULT_BOOK = """{index}. {books}"""
+VOTE_RESULTS_YOUR_VOTE_EXISTS = """<b>Твой выбор</b>
+
+{books}
+
+Переголосовать: /vote"""
+
+VOTE_RESULTS_YOUR_VOTE_NOT_EXISTS = """Ты ещё не проголосовал."""
+
+VOTE_RESULT_BOOK = """{index}. {book}"""
 VOTE_RESULT_SEVERAL_BOOKS = "Несколько книг занимают это место:\n{books}"
 VOTE_RESULTS_ZERO_VOTES = "Пока никто не проголосовал, ты можешь стать первым, вжух!"
 
