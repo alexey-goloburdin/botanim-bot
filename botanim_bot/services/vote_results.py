@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import TypedDict, cast
 
-import schulze  # type: ignore
+import schulze
 
 from botanim_bot import config
 from botanim_bot.db import fetch_all
