@@ -83,7 +83,7 @@ USER_IN_NOT_VOTE_MODE = """Мой искусственный интеллект 
 Нажми /start
 """
 
-NO_VOTE_RESULTS = """Сейчас нет активного голосования, поэтому нет и его
+VOTE_RESULTS_NO_ACTUAL_VOTING = """Сейчас нет активного голосования, поэтому нет и его
 результатов:)
 """
 
@@ -119,7 +119,7 @@ VOTE_RESULTS_YOUR_VOTE_EXISTS = """<b>Твой выбор</b>
 VOTE_RESULTS_YOUR_VOTE_NOT_EXISTS = """Ты ещё не проголосовал."""
 
 VOTE_RESULT_BOOK = """{index}. {book}"""
-VOTE_RESULT_SEVERAL_BOOKS = "Несколько книг занимают это место:\n{books}"
+VOTE_RESULT_SEVERAL_BOOKS = "Несколько книг занимают это место:\n    {books}"
 VOTE_RESULTS_ZERO_VOTES = "Пока никто не проголосовал, ты можешь стать первым, вжух!"
 
 CANT_VOTE = """Упс, голосование доступно только активным участникам Ботаним!
