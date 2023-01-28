@@ -200,14 +200,16 @@ def _get_book_read_comments(book: Book) -> str:
 
 
 def _is_book_started(book: Book) -> bool:
-    return (
-        book.read_start is not None
-        and datetime.strptime(book.read_start, config.DATE_FORMAT) <= datetime.now()
-    )
+    if book.read_start is not None:
+        return datetime.strptime(book.read_start,
+                                 config.DATE_FORMAT) <= datetime.now()
+    else:
+        return False
 
 
 def _is_book_finished(book: Book) -> bool:
-    return (
-        book.read_finish is not None
-        and datetime.strptime(book.read_finish, config.DATE_FORMAT) <= datetime.now()
-    )
+    if book.read_finish is not None:
+        return datetime.strptime(book.read_finish,
+                                 config.DATE_FORMAT) <= datetime.now()
+    else:
+        return False
