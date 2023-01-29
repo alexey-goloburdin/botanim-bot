@@ -97,7 +97,7 @@ def _rank_p(candidates, p):
         candidate_wins[num_wins].append(candidate_1)
 
     sorted_wins = sorted(candidate_wins.keys(), reverse=True)
-    return [candidate_wins[num_wins] for num_wins in sorted_wins]
+    return [(candidate_wins[num_wins], num_wins) for num_wins in sorted_wins]
 
 
 def compute_ranks(candidates, weighted_ranks):

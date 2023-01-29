@@ -119,6 +119,7 @@ VOTE_RESULTS_YOUR_VOTE_EXISTS = """<b>Твой выбор</b>
 VOTE_RESULTS_YOUR_VOTE_NOT_EXISTS = """Ты ещё не проголосовал."""
 
 VOTE_RESULT_BOOK = """{index}. {book}"""
+VOTE_RESULTS_RANK_RATING = ". Рейтинг {score}"
 VOTE_RESULT_SEVERAL_BOOKS = "Несколько книг занимают это место:\n    {books}"
 VOTE_RESULTS_ZERO_VOTES = "Пока никто не проголосовал, ты можешь стать первым, вжух!"
 

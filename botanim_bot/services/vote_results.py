@@ -14,9 +14,15 @@ class BookVoteResult:
 
 
 @dataclass
+class BooksSetScores:
+    books: list[BookVoteResult]
+    score: int
+
+
+@dataclass
 class VoteResults:
     voting: Voting
-    leaders: list[list[BookVoteResult]]
+    leaders: list[BooksSetScores]
     votes_count: int
 
 
@@ -39,11 +45,11 @@ async def get_leaders() -> VoteResults | None:
     best = schulze.compute_ranks(books, weighted_ranks)
     best = best[: config.VOTE_RESULTS_TOP]
     book_id_to_name = await get_book_names_by_ids(books)
-    for books_set in best:
+    for books_set, score in best:
         book_names = [
             BookVoteResult(book_name=book_id_to_name[book]) for book in books_set
         ]
-        vote_results.leaders.append(book_names)
+        vote_results.leaders.append(BooksSetScores(books=book_names, score=score))
     return vote_results
 
 
