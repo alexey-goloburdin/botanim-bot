@@ -132,15 +132,16 @@ ALREADY = """Прочитанные книги:
 {books}
 """
 
-ALREADY_BOOK = """{index}. {book_name} (читали с {book.read_start} \
-по {book.read_finish})"""
+ALREADY_BOOK = """{index}. {book_name}\n\
+Читали с {book.read_start} по {book.read_finish}, {book.read_comments}\n"""
 
 NOW = """Сейчас мы читаем:
 
 {books}
 """
 
-NOW_BOOK = """{index}{book_name} (с {book.read_start} по {book.read_finish})"""
+NOW_BOOK = """{index}{book_name}\n\
+Читаем с {book.read_start} по {book.read_finish}, {book.read_comments})"""
 
 BOOK_READ_STARTED = "читаем сейчас"
 BOOK_READ_FINISHED = "прочитана"
