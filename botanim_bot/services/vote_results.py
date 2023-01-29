@@ -76,15 +76,18 @@ async def _get_vote_results(vote_id: int) -> list[VoteRow]:
 
 def _build_data_for_schulze(
     rows,
-) -> tuple[set[int], list[tuple[list[int], int]]]:
-    candidate_books = []
+) -> tuple[set[int], list[tuple[list[list[int]], int]]]:
+    candidate_books = set()
     weighted_ranks = []
+
     for row in rows:
-        candidate_books.extend(
+        candidate_books.update(
             [row["first_book_id"], row["second_book_id"], row["third_book_id"]]
         )
+
         weighted_ranks.append((_prepare_weighted_ranks(row), row["votes_count"]))
-    return set(candidate_books), weighted_ranks
+
+    return candidate_books, weighted_ranks
 
 
 def _prepare_weighted_ranks(row: VoteRow) -> list[list[int]]:
