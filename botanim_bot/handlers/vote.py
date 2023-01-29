@@ -63,8 +63,7 @@ async def vote_button(update: Update, _: ContextTypes.DEFAULT_TYPE):
         return
     categories_with_books = list(await get_not_started_books())
 
-    pattern_prefix_length = len(config.VOTE_BOOKS_CALLBACK_PATTERN)
-    current_category_index = int(query.data[pattern_prefix_length:])
+    current_category_index = _get_current_category_index(query.data)
     current_category = categories_with_books[current_category_index]
 
     category_books_start_index = calculate_category_books_start_index(
@@ -81,3 +80,8 @@ async def vote_button(update: Update, _: ContextTypes.DEFAULT_TYPE):
         ),
         parse_mode=telegram.constants.ParseMode.HTML,
     )
+
+
+def _get_current_category_index(query_data) -> int:
+    pattern_prefix_length = len(config.VOTE_BOOKS_CALLBACK_PATTERN)
+    return int(query_data[pattern_prefix_length:])
