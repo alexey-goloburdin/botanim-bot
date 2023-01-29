@@ -8,14 +8,20 @@ packages = [{include = "botanim_bot"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-python-telegram-bot = "^20.0"
-aiosqlite = "^0.18.0"
-python-dotenv = "^0.21.1"
 
+python-telegram-bot = "==20.0"
+aiosqlite = "==0.18.0"
+python-dotenv = "==0.21.1"
+schulze = "==0.1"
 
 [tool.poetry.group.dev.dependencies]
-black = "^22.12.0"
+flake8 = "==6.0.0"
+black = "==22.12.0"
+pyright = "==1.1.291"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pyright]
+reportUnnecessaryTypeIgnoreComment="warning"

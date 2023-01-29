@@ -10,8 +10,9 @@ from botanim_bot import config
 async def get_db() -> aiosqlite.Connection:
     if not getattr(get_db, "db", None):
         db = await aiosqlite.connect(config.SQLITE_DB_FILE)
-        get_db.db = db
-    return get_db.db
+        setattr(get_db, "db", db)
+
+    return getattr(get_db, "db")
 
 
 async def fetch_all(

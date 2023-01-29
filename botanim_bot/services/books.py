@@ -31,7 +31,7 @@ class Book:
 class Category:
     id: int
     name: str
-    books: Iterable[Book]
+    books: list[Book]
 
 
 def format_book_name(book_name_with_author: str) -> str:
@@ -50,7 +50,9 @@ def calculate_category_books_start_index(
         if category.id != current_category.id:
             start_index += len(tuple(category.books))
         else:
-            return start_index
+            break
+
+    return start_index
 
 
 def build_category_with_books_string(
@@ -106,14 +108,15 @@ async def get_books_by_positional_numbers(numbers: Iterable[int]) -> tuple[Book]
     hardcoded_sql_values = []
     for index, number in enumerate(numbers, 1):
         hardcoded_sql_values.append(f"({number}, {index})")
-    hardcoded_sql_values = ", ".join(hardcoded_sql_values)
+
+    output_hardcoded_sql_values = ", ".join(hardcoded_sql_values)
 
     base_sql = _get_books_base_sql(
         'ROW_NUMBER() over (order by c."ordering", b."ordering") as idx'
     )
     sql = f"""
         SELECT t2.* FROM (
-          VALUES {hardcoded_sql_values}
+          VALUES {output_hardcoded_sql_values}
         ) t0
         INNER JOIN
         (
@@ -196,14 +199,16 @@ def _get_book_read_comments(book: Book) -> str:
 
 
 def _is_book_started(book: Book) -> bool:
-    return (
-        book.read_start is not None
-        and datetime.strptime(book.read_start, config.DATE_FORMAT) <= datetime.now()
-    )
+    if book.read_start is not None:
+        return datetime.strptime(book.read_start,
+                                 config.DATE_FORMAT) <= datetime.now()
+    else:
+        return False
 
 
 def _is_book_finished(book: Book) -> bool:
-    return (
-        book.read_finish is not None
-        and datetime.strptime(book.read_finish, config.DATE_FORMAT) <= datetime.now()
-    )
+    if book.read_finish is not None:
+        return datetime.strptime(book.read_finish,
+                                 config.DATE_FORMAT) <= datetime.now()
+    else:
+        return False

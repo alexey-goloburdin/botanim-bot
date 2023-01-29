@@ -57,6 +57,7 @@ async def get_actual_voting() -> Voting | None:
     voting = await fetch_one(sql)
     if not voting:
         return None
+
     return Voting(
         id=voting["id"],
         voting_start=voting["voting_start"],

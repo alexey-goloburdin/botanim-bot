@@ -10,15 +10,15 @@ from .cancel import cancel
 
 
 __all__ = [
-    start,
-    help_,
-    already,
-    now,
-    all_books,
-    all_books_button,
-    vote_results,
-    vote_process,
-    vote_button,
-    vote,
-    cancel,
+    "start",
+    "help_",
+    "already",
+    "now",
+    "all_books",
+    "all_books_button",
+    "vote_results",
+    "vote_process",
+    "vote_button",
+    "vote",
+    "cancel",
 ]
