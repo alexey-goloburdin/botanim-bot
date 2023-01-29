@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import TypedDict, cast
+from typing import Iterable, TypeVar, TypedDict, cast
 
 from botanim_bot import config
 from botanim_bot.db import fetch_all
@@ -76,26 +76,25 @@ async def _get_vote_results(vote_id: int) -> list[VoteRow]:
 
 def _build_data_for_schulze(
     rows,
-) -> tuple[set[int],
-           list[tuple[tuple[list[int],
-                            list[int],
-                            list[int]],
-                      int]]]:  # books  # weighted_ranks
-    books: set[int] = set()
-    weighted_ranks = list()
-
+) -> tuple[set[int], list[tuple[list[int], int]]]:
+    candidate_books = []
+    weighted_ranks = []
     for row in rows:
-        books.update(
+        candidate_books.extend(
             [row["first_book_id"], row["second_book_id"], row["third_book_id"]]
         )
+        weighted_ranks.append((_prepare_weighted_ranks(row), row["votes_count"]))
+    return set(candidate_books), weighted_ranks
 
-        weighted_ranks.append((
-            (
-                [row["first_book_id"]],
-                [row["second_book_id"]],
-                [row["third_book_id"]],
-            ),
-            row["votes_count"],
-        ))
 
-    return books, weighted_ranks
+def _prepare_weighted_ranks(row: VoteRow) -> list[list[int]]:
+    book_ids = [row["first_book_id"], row["second_book_id"], row["third_book_id"]]
+    book_ids_withot_duplicates = _remove_duplicates_with_save_order(book_ids)
+    return [[book_id] for book_id in book_ids_withot_duplicates]
+
+
+T = TypeVar("T")
+
+
+def _remove_duplicates_with_save_order(elements: Iterable[T]) -> Iterable[T]:
+    return list(dict.fromkeys(elements))
