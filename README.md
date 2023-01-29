@@ -1,4 +1,4 @@
-Telegram-бот для книжного клуба [Ботаним!](https://botanim.to.digital).
+# Telegram-бот для книжного клуба [Ботаним!](https://botanim.to.digital)
 
 [![alt text](botanim-logo.svg)](https://botanim.to.digital)
 
