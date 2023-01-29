@@ -42,6 +42,12 @@ vim botanim_bot/.env
 
 `TELEGRAM_BOT_TOKEN` — токен бота, полученный в BotFather, `TELEGRAM_BOTANIM_CHANNEL_ID` — идентификатор группы книжного клуба, участие в котором будет проверять бот в процессе голосования.
 
+Заполняем БД начальными данными:
+
+```bash
+cat botanim_bot/db.sql | sqlite3 botanim_bot/db.sqlite3
+```
+
 Устанавливаем зависимости Poetry и запускаем бота вручную:
 
 ```bash
