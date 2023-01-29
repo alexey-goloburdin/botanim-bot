@@ -2,6 +2,7 @@
 
 For more information read http://en.wikipedia.org/wiki/Schulze_method.
 """
+import itertools
 
 __author__ = "Michael G. Parker"
 __contact__ = "http://omgitsmgp.com/"
@@ -15,16 +16,25 @@ def _add_remaining_ranks(d, candidate, remaining_ranks, weight):
             d[candidate, other_candidate] += weight
 
 
-def _add_ranks_to_d(d, ranks, weight, candidates):
-    if len(ranks) < len(candidates):
-        ranks = list(ranks)
-        for candidat in candidates:
-            if (candidat,) not in ranks:
-                ranks.append((candidat,))
+def _add_ranks_to_d(d, ranks, weight):
     for i, rank in enumerate(ranks):
         remaining_ranks = ranks[i + 1 :]
         for candidate in rank:
             _add_remaining_ranks(d, candidate, remaining_ranks, weight)
+
+
+def _fill_missed_candidates(weighted_ranks, candidates):
+    weighted_ranks = list(weighted_ranks)
+    for index, rank in enumerate(weighted_ranks):
+        flatten_ranks = list(itertools.chain(*rank[0]))
+        if len(flatten_ranks) == len(candidates):
+            continue
+        rest_candidates = [c for c in candidates if c not in flatten_ranks]
+        if rest_candidates:
+            weighted_ranks[index] = list(rank)
+            weighted_ranks[index][0] = list(rank[0])
+            weighted_ranks[index][0].append(rest_candidates)
+    return weighted_ranks
 
 
 def _compute_d(weighted_ranks, candidates):
@@ -32,9 +42,10 @@ def _compute_d(weighted_ranks, candidates):
 
     d[V,W] is the number of voters who prefer candidate V over W.
     """
+    weighted_ranks = _fill_missed_candidates(weighted_ranks, candidates)
     d = defaultdict(int)
     for ranks, weight in weighted_ranks:
-        _add_ranks_to_d(d, ranks, weight, candidates)
+        _add_ranks_to_d(d, ranks, weight)
     return d
 
 
@@ -86,7 +97,7 @@ def _rank_p(candidates, p):
         candidate_wins[num_wins].append(candidate_1)
 
     sorted_wins = sorted(candidate_wins.keys(), reverse=True)
-    return [candidate_wins[num_wins] for num_wins in sorted_wins]
+    return [(candidate_wins[num_wins], num_wins) for num_wins in sorted_wins]
 
 
 def compute_ranks(candidates, weighted_ranks):

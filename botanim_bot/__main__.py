@@ -26,37 +26,29 @@ if not config.TELEGRAM_BOT_TOKEN or not config.TELEGRAM_BOTANIM_CHANNEL_ID:
 def main():
     application = ApplicationBuilder().token(config.TELEGRAM_BOT_TOKEN).build()
 
-    application.add_handler(CommandHandler("start", handlers.start))
-    application.add_handler(CommandHandler("help", handlers.help_))
+    COMMAND_HANDLERS = {
+        "start": handlers.start,
+        "help": handlers.help_,
+        "allbooks": handlers.all_books,
+        "already": handlers.already,
+        "now": handlers.now,
+        "vote": handlers.vote,
+        "cancel": handlers.cancel,
+        "voteresults": handlers.vote_results,
+    }
+    for command_name, command_handler in COMMAND_HANDLERS.items():
+        application.add_handler(CommandHandler(command_name, command_handler))
 
-    application.add_handler(CommandHandler("allbooks", handlers.all_books))
+    CALLBACK_QUERY_HANDLERS = {
+        rf"^{config.ALL_BOOKS_CALLBACK_PATTERN}(\d+)$": handlers.all_books_button,
+        rf"^{config.VOTE_BOOKS_CALLBACK_PATTERN}(\d+)$": handlers.vote_button,
+    }
+    for pattern, handler in CALLBACK_QUERY_HANDLERS.items():
+        application.add_handler(CallbackQueryHandler(handler, pattern=pattern))
+
     application.add_handler(
-        CallbackQueryHandler(
-            handlers.all_books_button,
-            pattern=rf"^{config.ALL_BOOKS_CALLBACK_PATTERN}(\d+)$",
-        )
+        MessageHandler(filters.TEXT & (~filters.COMMAND), handlers.vote_process)
     )
-
-    application.add_handler(CommandHandler("already", handlers.already))
-
-    application.add_handler(CommandHandler("now", handlers.now))
-
-    application.add_handler(CommandHandler("vote", handlers.vote))
-    application.add_handler(CommandHandler("cancel", handlers.cancel))
-    application.add_handler(
-        CallbackQueryHandler(
-            handlers.vote_button,
-            pattern=rf"^{config.VOTE_BOOKS_CALLBACK_PATTERN}(\d+)$",
-        )
-    )
-    application.add_handler(
-        MessageHandler(
-            filters.TEXT & (~filters.COMMAND),
-            handlers.vote_process,
-        )
-    )
-
-    application.add_handler(CommandHandler("voteresults", handlers.vote_results))
 
     application.run_polling()
 

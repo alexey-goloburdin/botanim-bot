@@ -26,15 +26,13 @@ async def all_books(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 
-async def all_books_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def all_books_button(update: Update, _: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
     if not query.data or not query.data.strip():
         return
     categories_with_books = list(await get_all_books())
-
-    pattern_prefix_length = len(config.ALL_BOOKS_CALLBACK_PATTERN)
-    current_category_index = int(query.data[pattern_prefix_length:])
+    current_category_index = _get_current_category_index(query.data)
     await query.edit_message_text(
         text=build_category_with_books_string(
             categories_with_books[current_category_index]
@@ -46,3 +44,8 @@ async def all_books_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ),
         parse_mode=telegram.constants.ParseMode.HTML,
     )
+
+
+def _get_current_category_index(query_data) -> int:
+    pattern_prefix_length = len(config.ALL_BOOKS_CALLBACK_PATTERN)
+    return int(query_data[pattern_prefix_length:])

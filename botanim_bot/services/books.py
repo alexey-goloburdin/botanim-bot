@@ -102,7 +102,7 @@ async def get_now_reading_books() -> Iterable[Book]:
     return await _get_books_from_db(sql)
 
 
-async def get_books_by_numbers(numbers: Iterable[int]) -> Iterable[Book]:
+async def get_books_by_positional_numbers(numbers: Iterable[int]) -> tuple[Book]:
     numbers_joined = ", ".join(map(str, map(int, numbers)))
 
     hardcoded_sql_values = []
@@ -129,8 +129,7 @@ async def get_books_by_numbers(numbers: Iterable[int]) -> Iterable[Book]:
         ON t0.column1 = t2.idx
         ORDER BY t0.column2
     """
-    books = await _get_books_from_db(cast(LiteralString, sql))
-    return books
+    return tuple(await _get_books_from_db(cast(LiteralString, sql)))
 
 
 async def get_book_names_by_ids(ids: Iterable[int]) -> dict[int, str]:
