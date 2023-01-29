@@ -19,37 +19,24 @@ class BooksList:
 
 
 @dataclass
-class VoteResults:
+class VoteLeaders:
     voting: Voting
     leaders: list[BooksList]
     votes_count: int
 
 
-async def get_leaders() -> VoteResults | None:
+async def get_leaders() -> VoteLeaders | None:
     actual_voting = await get_actual_voting()
     if actual_voting is None:
         return None
-    vote_results = VoteResults(
-        voting=Voting(
-            voting_start=actual_voting.voting_start,
-            voting_finish=actual_voting.voting_finish,
-            id=actual_voting.id,
-        ),
-        leaders=[],
-        votes_count=0,
-    )
-    rows = await _get_vote_results(actual_voting.id)
-    vote_results.votes_count = sum((vote["votes_count"] for vote in rows))
-    books, weighted_ranks = _build_data_for_schulze(rows)
-    best = schulze.compute_ranks(books, weighted_ranks)
-    best = best[: config.VOTE_RESULTS_TOP]
-    book_id_to_name = await get_book_names_by_ids(books)
-    for books_set in best:
-        book_names = [
-            BookVoteResult(book_name=book_id_to_name[book]) for book in books_set
-        ]
-        vote_results.leaders.append(BooksList(books=book_names))
-    return vote_results
+
+    vote_results_raw = await _get_vote_results(actual_voting.id)
+
+    leaders_ids, candidates_ids = _get_top_leaders_with_schulze(vote_results_raw)
+
+    vote_leaders = await _build_vote_leaders(actual_voting, candidates_ids, leaders_ids)
+    vote_leaders.votes_count = _calculate_overall_votes(vote_results_raw)
+    return vote_leaders
 
 
 class VoteRow(TypedDict):
@@ -57,6 +44,43 @@ class VoteRow(TypedDict):
     second_book_id: int
     third_book_id: int
     votes_count: int
+
+
+def _get_top_leaders_with_schulze(
+    vote_results_raw: list[VoteRow],
+) -> tuple[list[list[int]], set[int]]:
+    candidates, weighted_ranks = _build_data_for_schulze(vote_results_raw)
+    leaders = schulze.compute_ranks(candidates, weighted_ranks)
+    return leaders[: config.VOTE_RESULTS_TOP], candidates
+
+
+async def _build_vote_leaders(
+    voting: Voting, books_candidates: Iterable[int], leaders: list[list[int]]
+) -> VoteLeaders:
+    book_id_to_name = await get_book_names_by_ids(books_candidates)
+    vote_leaders = _init_vote_results(voting)
+    for books_set in leaders:
+        book_names = [
+            BookVoteResult(book_name=book_id_to_name[book]) for book in books_set
+        ]
+        vote_leaders.leaders.append(BooksList(books=book_names))
+    return vote_leaders
+
+
+def _init_vote_results(voting: Voting) -> VoteLeaders:
+    return VoteLeaders(
+        voting=Voting(
+            voting_start=voting.voting_start,
+            voting_finish=voting.voting_finish,
+            id=voting.id,
+        ),
+        leaders=[],
+        votes_count=0,
+    )
+
+
+def _calculate_overall_votes(vote_results_rows: list[VoteRow]) -> int:
+    return sum((vote["votes_count"] for vote in vote_results_rows))
 
 
 async def _get_vote_results(vote_id: int) -> list[VoteRow]:

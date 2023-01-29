@@ -8,7 +8,7 @@ from botanim_bot.services.books import format_book_name
 from botanim_bot.services.vote_results import (
     BookVoteResult,
     BooksList,
-    VoteResults,
+    VoteLeaders,
     get_leaders,
 )
 from botanim_bot.services.votings import Vote, get_user_actual_vote
@@ -27,7 +27,7 @@ async def vote_results(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await send_response(update, context, response)
 
 
-def _get_books_list_formatted(leaders: VoteResults) -> str:
+def _get_books_list_formatted(leaders: VoteLeaders) -> str:
     books = []
     for rank_number, books_in_the_rank in enumerate(leaders.leaders, 1):
         books.append(_get_books_in_the_rank_formatted(books_in_the_rank, rank_number))
@@ -68,7 +68,7 @@ def _get_your_vote_formatted(your_vote: Vote | None) -> str:
     return message_texts.VOTE_RESULTS_YOUR_VOTE_EXISTS.format(books=book_names)
 
 
-def _build_response(leaders: VoteResults, your_vote: Vote | None) -> str:
+def _build_response(leaders: VoteLeaders, your_vote: Vote | None) -> str:
     return message_texts.VOTE_RESULTS.format(
         books=_get_books_list_formatted(leaders),
         voting_start=leaders.voting.voting_start,
