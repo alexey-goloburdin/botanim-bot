@@ -7,7 +7,7 @@ from botanim_bot import message_texts
 from botanim_bot.services.books import format_book_name
 from botanim_bot.services.vote_results import (
     BookVoteResult,
-    BooksSetScores,
+    BooksList,
     VoteResults,
     get_leaders,
 )
@@ -35,27 +35,20 @@ def _get_books_list_formatted(leaders: VoteResults) -> str:
 
 
 def _get_books_in_the_rank_formatted(
-    books_in_the_rank: BooksSetScores, rank_number: int
+    books_in_the_rank: BooksList, rank_number: int
 ) -> str:
-    score = books_in_the_rank.score
     if len(books_in_the_rank.books) == 1:
-        book_str = _get_book_formatted(books_in_the_rank.books[0], score)
+        book_str = _get_book_formatted(books_in_the_rank.books[0])
     else:
         books_str = "\n    ".join(
-            [_get_book_formatted(book, score) for book in books_in_the_rank.books]
+            [_get_book_formatted(book) for book in books_in_the_rank.books]
         )
         book_str = message_texts.VOTE_RESULT_SEVERAL_BOOKS.format(books=books_str)
     return message_texts.VOTE_RESULT_BOOK.format(index=rank_number, book=book_str)
 
 
-def _get_book_formatted(book: BookVoteResult, score: int) -> str:
-    book_name_formatted = format_book_name(book.book_name)
-    score_formatted = _get_score_formatted(score)
-    return f"{book_name_formatted}{score_formatted}"
-
-
-def _get_score_formatted(score: int) -> str:
-    return message_texts.VOTE_RESULTS_RANK_RATING.format(score=score)
+def _get_book_formatted(book: BookVoteResult) -> str:
+    return format_book_name(book.book_name)
 
 
 def _get_your_vote_formatted(your_vote: Vote | None) -> str:
