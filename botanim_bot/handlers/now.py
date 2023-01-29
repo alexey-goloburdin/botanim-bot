@@ -3,7 +3,7 @@ from telegram.ext import ContextTypes
 
 from botanim_bot.handlers.response import send_response
 from botanim_bot import message_texts
-from botanim_bot.services.books import get_now_reading_books
+from botanim_bot.services.books import format_book_name, get_now_reading_books
 
 
 async def now(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -15,6 +15,10 @@ async def now(update: Update, context: ContextTypes.DEFAULT_TYPE):
             prefix = f"{index}. "
         else:
             prefix = ""
-        books.append(message_texts.NOW_BOOK.format(index=f"{prefix}", book=book))
+        books.append(
+            message_texts.NOW_BOOK.format(
+                index=f"{prefix}", book_name=format_book_name(book.name), book=book
+            )
+        )
     response = message_texts.NOW.format(books="\n".join(books))
     await send_response(update, context, response)
