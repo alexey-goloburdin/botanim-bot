@@ -27,6 +27,16 @@ async def vote_results(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await send_response(update, context, response)
 
 
+def _build_response(leaders: VoteLeaders, your_vote: Vote | None) -> str:
+    return message_texts.VOTE_RESULTS.format(
+        books=_get_books_list_formatted(leaders),
+        voting_start=leaders.voting.voting_start,
+        voting_finish=leaders.voting.voting_finish,
+        votes_count=leaders.votes_count,
+        your_vote=_get_your_vote_formatted(your_vote),
+    )
+
+
 def _get_books_list_formatted(leaders: VoteLeaders) -> str:
     books = []
     for rank_number, books_in_the_rank in enumerate(leaders.leaders, 1):
@@ -66,13 +76,3 @@ def _get_your_vote_formatted(your_vote: Vote | None) -> str:
         [f"{index}. {book_name}" for index, book_name in enumerate(book_names, 1)]
     )
     return message_texts.VOTE_RESULTS_YOUR_VOTE_EXISTS.format(books=book_names)
-
-
-def _build_response(leaders: VoteLeaders, your_vote: Vote | None) -> str:
-    return message_texts.VOTE_RESULTS.format(
-        books=_get_books_list_formatted(leaders),
-        voting_start=leaders.voting.voting_start,
-        voting_finish=leaders.voting.voting_finish,
-        votes_count=leaders.votes_count,
-        your_vote=_get_your_vote_formatted(your_vote),
-    )
