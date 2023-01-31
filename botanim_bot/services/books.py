@@ -34,43 +34,6 @@ class Category:
     books: list[Book]
 
 
-def format_book_name(book_name_with_author: str) -> str:
-    try:
-        book_name, author = tuple(map(str.strip, book_name_with_author.split("::")))
-    except ValueError:
-        return book_name_with_author
-    return f"{book_name}. <i>{author}</i>"
-
-
-def calculate_category_books_start_index(
-    categories: Iterable[Category], current_category: Category
-) -> int | None:
-    start_index = 0
-    for category in categories:
-        if category.id != current_category.id:
-            start_index += len(tuple(category.books))
-        else:
-            break
-
-    return start_index
-
-
-def build_category_with_books_string(
-    category: Category, start_index: int | None = None
-) -> str:
-    response = [f"<b>{category.name}</b>\n\n"]
-    for index, book in enumerate(category.books, 1):
-        if start_index is None:
-            prefix = "◦"
-        else:
-            prefix = f"{start_index + index}."
-        response.append(
-            f"{prefix} {format_book_name(book.name)} "
-            f"{_get_book_read_comments(book)}\n"
-        )
-    return "".join(response)
-
-
 async def get_all_books() -> Iterable[Category]:
     sql = f"""{_get_books_base_sql()}
               ORDER BY c."ordering", b."ordering" """
@@ -111,6 +74,43 @@ async def get_next_book() -> Book | None:
     if not books:
         return None
     return books[0]
+
+
+def format_book_name(book_name_with_author: str) -> str:
+    try:
+        book_name, author = tuple(map(str.strip, book_name_with_author.split("::")))
+    except ValueError:
+        return book_name_with_author
+    return f"{book_name}. <i>{author}</i>"
+
+
+def calculate_category_books_start_index(
+    categories: Iterable[Category], current_category: Category
+) -> int | None:
+    start_index = 0
+    for category in categories:
+        if category.id != current_category.id:
+            start_index += len(tuple(category.books))
+        else:
+            break
+
+    return start_index
+
+
+def build_category_with_books_string(
+    category: Category, start_index: int | None = None
+) -> str:
+    response = [f"<b>{category.name}</b>\n\n"]
+    for index, book in enumerate(category.books, 1):
+        if start_index is None:
+            prefix = "◦"
+        else:
+            prefix = f"{start_index + index}."
+        response.append(
+            f"{prefix} {format_book_name(book.name)} "
+            f"{_get_book_read_comments(book)}\n"
+        )
+    return "".join(response)
 
 
 async def get_books_by_positional_numbers(numbers: Iterable[int]) -> tuple[Book]:
@@ -206,18 +206,26 @@ def _get_book_read_comments(book: Book) -> str:
         return message_texts.BOOK_ACTIVE.format(
             read_comments=book.read_comments, status=status
         )
+    elif _is_book_planned(book):
+        return message_texts.BOOK_PLANNED.format(
+            read_comments=book.read_comments, book=book
+        )
     return ""
 
 
 def _is_book_started(book: Book) -> bool:
     if book.read_start is not None:
         return datetime.strptime(book.read_start, config.DATE_FORMAT) <= datetime.now()
-    else:
-        return False
+    return False
+
+
+def _is_book_planned(book: Book) -> bool:
+    if book.read_start is not None:
+        return datetime.strptime(book.read_start, config.DATE_FORMAT) >= datetime.now()
+    return False
 
 
 def _is_book_finished(book: Book) -> bool:
     if book.read_finish is not None:
         return datetime.strptime(book.read_finish, config.DATE_FORMAT) <= datetime.now()
-    else:
-        return False
+    return False

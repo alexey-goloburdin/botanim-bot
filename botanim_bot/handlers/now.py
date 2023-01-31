@@ -33,7 +33,6 @@ def _build_book_str(prefix: str, book: Book, next_book: Book | None) -> str:
         book_name=format_book_name(book.name),
         book=book,
         next_book=_build_next_book(next_book),
-        read_comments=book.read_comments.capitalize() if book.read_comments else "",
     ).strip()
 
 
@@ -49,10 +48,6 @@ def _build_next_book(next_book: Book | None) -> str:
     next_book_str = ""
     if next_book:
         next_book_str = message_texts.NEXT_BOOK.format(
-            book_name=format_book_name(next_book.name),
-            book=next_book,
-            read_comments=(
-                next_book.read_comments.capitalize() if next_book.read_comments else ""
-            ),
+            book_name=format_book_name(next_book.name), book=next_book
         )
     return next_book_str
