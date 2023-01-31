@@ -3,7 +3,7 @@ from datetime import datetime
 import logging
 from typing import Iterable
 
-from botanim_bot.services.books import Book
+from botanim_bot.services.books import Book, format_book_name
 from botanim_bot.services.users import insert_user
 from botanim_bot import config
 from botanim_bot.db import execute, fetch_one
@@ -22,6 +22,12 @@ class Voting:
     id: int
     voting_start: str
     voting_finish: str
+
+    def is_voting_has_passed(self) -> bool:
+        return (
+            datetime.now().date()
+            > datetime.strptime(self.voting_finish, config.DATE_FORMAT).date()
+        )
 
     def __post_init__(self):
         """Set up voting_start and voting_finish to needed string format"""
@@ -112,9 +118,10 @@ async def get_user_vote(user_id: int, voting_id: int) -> Vote | None:
     if not vote:
         return None
     return Vote(
-        first_book_name=vote["first_book_name"],
-        second_book_name=vote["second_book_name"],
-        third_book_name=vote["third_book_name"],
+        **{
+            field: format_book_name(vote[field])
+            for field in ("first_book_name", "second_book_name", "third_book_name")
+        }
     )
 
 

@@ -5,8 +5,9 @@ from telegram.ext import ContextTypes
 
 from botanim_bot.handlers.response import send_response
 from botanim_bot.handlers.keyboards import get_categories_keyboard
-from botanim_bot.services.books import build_category_with_books_string, get_all_books
+from botanim_bot.services.books import get_all_books
 from botanim_bot import config
+from botanim_bot.templates import render_template
 
 
 async def all_books(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -17,7 +18,10 @@ async def all_books(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await send_response(
         update,
         context,
-        build_category_with_books_string(categories_with_books[0]),
+        render_template(
+            "category_with_books.tpl",
+            {"category": categories_with_books[0], "start_index": None},
+        ),
         get_categories_keyboard(
             current_category_index=0,
             categories_count=len(categories_with_books),
@@ -34,8 +38,12 @@ async def all_books_button(update: Update, _: ContextTypes.DEFAULT_TYPE):
     categories_with_books = list(await get_all_books())
     current_category_index = _get_current_category_index(query.data)
     await query.edit_message_text(
-        text=build_category_with_books_string(
-            categories_with_books[current_category_index]
+        text=render_template(
+            "category_with_books.tpl",
+            {
+                "category": categories_with_books[current_category_index],
+                "start_index": None,
+            },
         ),
         reply_markup=get_categories_keyboard(
             current_category_index=current_category_index,

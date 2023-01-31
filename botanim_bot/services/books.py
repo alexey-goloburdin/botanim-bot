@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import LiteralString, cast
 
-from botanim_bot import config, message_texts
+from botanim_bot import config
 from botanim_bot.db import fetch_all
 
 
@@ -17,6 +17,30 @@ class Book:
     read_finish: str | None
     read_comments: str | None
 
+    def is_started(self) -> bool:
+        if self.read_start is not None:
+            return (
+                datetime.strptime(self.read_start, config.DATE_FORMAT).date()
+                <= datetime.now().date()
+            )
+        return False
+
+    def is_finished(self) -> bool:
+        if self.read_finish is not None:
+            return (
+                datetime.strptime(self.read_finish, config.DATE_FORMAT).date()
+                <= datetime.now().date()
+            )
+        return False
+
+    def is_planned(self) -> bool:
+        if self.read_start is not None:
+            return (
+                datetime.strptime(self.read_start, config.DATE_FORMAT).date()
+                >= datetime.now().date()
+            )
+        return False
+
     def __post_init__(self):
         """Set up read_start and read_finish to needed string format"""
         for field in ("read_start", "read_finish"):
@@ -25,6 +49,8 @@ class Book:
                 continue
             value = datetime.strptime(value, "%Y-%m-%d").strftime(config.DATE_FORMAT)
             setattr(self, field, value)
+
+        self.name = format_book_name(self.name)
 
 
 @dataclass
@@ -76,14 +102,6 @@ async def get_next_book() -> Book | None:
     return books[0]
 
 
-def format_book_name(book_name_with_author: str) -> str:
-    try:
-        book_name, author = tuple(map(str.strip, book_name_with_author.split("::")))
-    except ValueError:
-        return book_name_with_author
-    return f"{book_name}. <i>{author}</i>"
-
-
 def calculate_category_books_start_index(
     categories: Iterable[Category], current_category: Category
 ) -> int | None:
@@ -95,22 +113,6 @@ def calculate_category_books_start_index(
             break
 
     return start_index
-
-
-def build_category_with_books_string(
-    category: Category, start_index: int | None = None
-) -> str:
-    response = [f"<b>{category.name}</b>\n\n"]
-    for index, book in enumerate(category.books, 1):
-        if start_index is None:
-            prefix = "◦"
-        else:
-            prefix = f"{start_index + index}."
-        response.append(
-            f"{prefix} {format_book_name(book.name)} "
-            f"{_get_book_read_comments(book)}\n"
-        )
-    return "".join(response)
 
 
 async def get_books_by_positional_numbers(numbers: Iterable[int]) -> tuple[Book]:
@@ -150,6 +152,14 @@ async def get_book_names_by_ids(ids: Iterable[int]) -> dict[int, str]:
               ORDER BY c."name", b."name" """
     books = await _get_books_from_db(cast(LiteralString, sql))
     return {book.id: book.name for book in books}
+
+
+def format_book_name(book_name: str) -> str:
+    try:
+        book_name, author = tuple(map(str.strip, book_name.split("::")))
+    except ValueError:
+        return book_name
+    return f"{book_name}. <i>{author}</i>"
 
 
 def _group_books_by_categories(books: Iterable[Book]) -> Iterable[Category]:
@@ -195,46 +205,3 @@ async def _get_books_from_db(sql: LiteralString) -> list[Book]:
         )
         for book in books_raw
     ]
-
-
-def _get_book_read_comments(book: Book) -> str:
-    if _is_book_started(book):
-        if not _is_book_finished(book):
-            status = message_texts.BOOK_READ_STARTED
-        else:
-            status = message_texts.BOOK_READ_FINISHED
-        return message_texts.BOOK_ACTIVE.format(
-            read_comments=book.read_comments, status=status
-        )
-    elif _is_book_planned(book):
-        return message_texts.BOOK_PLANNED.format(
-            read_comments=book.read_comments, book=book
-        )
-    return ""
-
-
-def _is_book_started(book: Book) -> bool:
-    if book.read_start is not None:
-        return (
-            datetime.strptime(book.read_start, config.DATE_FORMAT).date()
-            <= datetime.now().date()
-        )
-    return False
-
-
-def _is_book_planned(book: Book) -> bool:
-    if book.read_start is not None:
-        return (
-            datetime.strptime(book.read_start, config.DATE_FORMAT).date()
-            >= datetime.now().date()
-        )
-    return False
-
-
-def _is_book_finished(book: Book) -> bool:
-    if book.read_finish is not None:
-        return (
-            datetime.strptime(book.read_finish, config.DATE_FORMAT).date()
-            <= datetime.now().date()
-        )
-    return False
