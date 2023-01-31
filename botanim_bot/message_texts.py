@@ -141,7 +141,13 @@ NOW = """Сейчас мы читаем:
 """
 
 NOW_BOOK = """{index}{book_name}\n\
-Читаем с {book.read_start} по {book.read_finish}, {book.read_comments}"""
+Читаем с {book.read_start} по {book.read_finish}. {read_comments}
+
+{next_book}"""
+
+NEXT_BOOK = """Следующая книга:
+
+{book_name}, читаем с {book.read_start} по {book.read_finish}. {read_comments}"""
 
 BOOK_READ_STARTED = "читаем сейчас"
 BOOK_READ_FINISHED = "прочитана"
