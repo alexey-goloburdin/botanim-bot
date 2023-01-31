@@ -4,9 +4,8 @@ import telegram
 from telegram import Update, User
 from telegram.ext import ContextTypes
 
-from botanim_bot import config, message_texts
+from botanim_bot import config
 from botanim_bot.services.books import (
-    build_category_with_books_string,
     calculate_category_books_start_index,
     get_not_started_books,
 )
@@ -15,13 +14,16 @@ from botanim_bot.handlers.response import send_response
 from botanim_bot.services.validation import is_user_in_channel
 from botanim_bot.services.vote_mode import set_user_in_vote_mode
 from botanim_bot.services.votings import get_actual_voting
+from botanim_bot.templates import render_template
 
 
 def validate_user(handler):
     async def wrapped(update: Update, context: ContextTypes.DEFAULT_TYPE):
         user_id = cast(User, update.effective_user).id
         if not is_user_in_channel(user_id, config.TELEGRAM_BOTANIM_CHANNEL_ID):
-            await send_response(update, context, message_texts.CANT_VOTE)
+            await send_response(
+                update, context, response=render_template("vote_cant_vote.tpl")
+            )
             return
         await handler(update, context)
 
@@ -31,7 +33,9 @@ def validate_user(handler):
 @validate_user
 async def vote(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if await get_actual_voting() is None:
-        await send_response(update, context, message_texts.NO_ACTUAL_VOTING)
+        await send_response(
+            update, context, response=render_template("vote_no_actual_voting.tpl")
+        )
         return
 
     if not update.message:
@@ -46,13 +50,18 @@ async def vote(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await set_user_in_vote_mode(cast(User, update.effective_user).id)
     await update.message.reply_text(
-        build_category_with_books_string(current_category, category_books_start_index),
+        render_template(
+            "category_with_books.tpl",
+            {"category": current_category, "start_index": category_books_start_index},
+        ),
         reply_markup=get_categories_keyboard(
             0, len(categories_with_books), config.VOTE_BOOKS_CALLBACK_PATTERN
         ),
         parse_mode=telegram.constants.ParseMode.HTML,
     )
-    await send_response(update, context, message_texts.VOTE)
+    await send_response(
+        update, context, response=render_template("vote_description.tpl")
+    )
 
 
 @validate_user
@@ -70,8 +79,9 @@ async def vote_button(update: Update, _: ContextTypes.DEFAULT_TYPE):
         categories_with_books, current_category
     )
     await query.edit_message_text(
-        text=build_category_with_books_string(
-            current_category, category_books_start_index
+        render_template(
+            "category_with_books.tpl",
+            {"category": current_category, "start_index": category_books_start_index},
         ),
         reply_markup=get_categories_keyboard(
             current_category_index,
