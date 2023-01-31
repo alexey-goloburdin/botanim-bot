@@ -133,22 +133,28 @@ ALREADY = """Прочитанные книги:
 """
 
 ALREADY_BOOK = """{index}. {book_name}\n\
-Читали с {book.read_start} по {book.read_finish}, {book.read_comments}\n"""
+Читали с {book.read_start} по {book.read_finish}. {book.read_comments}\n"""
 
 NOW = """Сейчас мы читаем:
 
 {books}
 """
 
-NOW_BOOK = """{index}{book_name}\n\
-Читаем с {book.read_start} по {book.read_finish}. {read_comments}
+NOW_BOOK = """{index}{book_name}
+Читаем с {book.read_start} по {book.read_finish}.
+{book.read_comments}
 
 {next_book}"""
 
 NEXT_BOOK = """Следующая книга:
 
-{book_name}, читаем с {book.read_start} по {book.read_finish}. {read_comments}"""
+{book_name}
+Читаем с {book.read_start} по {book.read_finish}.
+{book.read_comments}"""
 
 BOOK_READ_STARTED = "читаем сейчас"
 BOOK_READ_FINISHED = "прочитана"
-BOOK_ACTIVE = "— <b>{status}, {read_comments}</b>"
+BOOK_ACTIVE = "— <b>{status}. {read_comments}</b>"
+BOOK_PLANNED = (
+    "— <b>будем читать с {book.read_start} по {book.read_finish}. {read_comments}</b>"
+)
