@@ -102,6 +102,17 @@ async def get_now_reading_books() -> Iterable[Book]:
     return await _get_books_from_db(sql)
 
 
+async def get_next_book() -> Book | None:
+    sql = f"""{_get_books_base_sql()}
+              WHERE b.read_start > current_date
+              ORDER BY b.read_start
+              LIMIT 1"""
+    books = await _get_books_from_db(sql)
+    if not books:
+        return None
+    return books[0]
+
+
 async def get_books_by_positional_numbers(numbers: Iterable[int]) -> tuple[Book]:
     numbers_joined = ", ".join(map(str, map(int, numbers)))
 
@@ -170,7 +181,7 @@ def _get_books_base_sql(select_param: LiteralString | None = None) -> LiteralStr
     """
 
 
-async def _get_books_from_db(sql: LiteralString) -> Iterable[Book]:
+async def _get_books_from_db(sql: LiteralString) -> list[Book]:
     books_raw = await fetch_all(sql)
     return [
         Book(
@@ -200,15 +211,13 @@ def _get_book_read_comments(book: Book) -> str:
 
 def _is_book_started(book: Book) -> bool:
     if book.read_start is not None:
-        return datetime.strptime(book.read_start,
-                                 config.DATE_FORMAT) <= datetime.now()
+        return datetime.strptime(book.read_start, config.DATE_FORMAT) <= datetime.now()
     else:
         return False
 
 
 def _is_book_finished(book: Book) -> bool:
     if book.read_finish is not None:
-        return datetime.strptime(book.read_finish,
-                                 config.DATE_FORMAT) <= datetime.now()
+        return datetime.strptime(book.read_finish, config.DATE_FORMAT) <= datetime.now()
     else:
         return False
