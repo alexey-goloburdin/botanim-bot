@@ -107,7 +107,6 @@ async def get_user_vote(user_id: int, voting_id: int) -> Vote | None:
         LEFT JOIN book b3 ON v.third_book_id =b3.id
         WHERE v.user_id=:user_id
             AND v.vote_id=:voting_id
-            AND v.vote_id=:voting_id
     """
     vote = await fetch_one(sql, {"user_id": user_id, "voting_id": voting_id})
     if not vote:

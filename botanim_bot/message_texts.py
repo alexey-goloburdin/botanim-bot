@@ -114,7 +114,9 @@ VOTE_RESULTS_YOUR_VOTE_EXISTS = """<b>Твой выбор</b>
 
 {books}
 
-Переголосовать: /vote"""
+{revote}"""
+
+REVOTE = "Переголосовать: /vote"
 
 VOTE_RESULTS_YOUR_VOTE_NOT_EXISTS = """Ты ещё не проголосовал."""
 

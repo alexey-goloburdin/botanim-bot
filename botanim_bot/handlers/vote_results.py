@@ -32,7 +32,10 @@ async def vote_results(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 def is_voting_has_passed(voting: Voting):
-    return datetime.now() >= datetime.strptime(voting.voting_finish, config.DATE_FORMAT)
+    return (
+        datetime.now().date()
+        > datetime.strptime(voting.voting_finish, config.DATE_FORMAT).date()
+    )
 
 
 def _build_response(leaders: VoteLeaders, your_vote: Vote | None) -> str:
@@ -43,9 +46,7 @@ def _build_response(leaders: VoteLeaders, your_vote: Vote | None) -> str:
         voting_start=leaders.voting.voting_start,
         voting_finish=leaders.voting.voting_finish,
         votes_count=leaders.votes_count,
-        your_vote=(
-            _get_your_vote_formatted(your_vote) if not is_voting_has_passed_ else ""
-        ),
+        your_vote=_get_your_vote_formatted(your_vote, is_voting_has_passed_),
     )
 
 
@@ -73,7 +74,9 @@ def _get_book_formatted(book: BookVoteResult) -> str:
     return format_book_name(book.book_name)
 
 
-def _get_your_vote_formatted(your_vote: Vote | None) -> str:
+def _get_your_vote_formatted(
+    your_vote: Vote | None, is_voting_has_passed_: bool
+) -> str:
     if not your_vote:
         return message_texts.VOTE_RESULTS_YOUR_VOTE_NOT_EXISTS
     book_names = map(
@@ -87,4 +90,7 @@ def _get_your_vote_formatted(your_vote: Vote | None) -> str:
     book_names = "\n".join(
         [f"{index}. {book_name}" for index, book_name in enumerate(book_names, 1)]
     )
-    return message_texts.VOTE_RESULTS_YOUR_VOTE_EXISTS.format(books=book_names)
+    return message_texts.VOTE_RESULTS_YOUR_VOTE_EXISTS.format(
+        books=book_names,
+        revote=message_texts.REVOTE if not is_voting_has_passed_ else "",
+    )
