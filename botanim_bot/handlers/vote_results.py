@@ -1,7 +1,9 @@
+from datetime import datetime
 from typing import cast
 from telegram import Update, User
 from telegram.ext import ContextTypes
 
+from botanim_bot import config
 from botanim_bot.handlers.response import send_response
 from botanim_bot import message_texts
 from botanim_bot.services.books import format_book_name
@@ -11,7 +13,7 @@ from botanim_bot.services.vote_results import (
     VoteLeaders,
     get_leaders,
 )
-from botanim_bot.services.votings import Vote, get_user_actual_vote
+from botanim_bot.services.votings import Vote, Voting, get_user_vote
 
 
 async def vote_results(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -22,18 +24,28 @@ async def vote_results(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
 
-    your_vote = await get_user_actual_vote(cast(User, update.effective_user).id)
+    your_vote = await get_user_vote(
+        cast(User, update.effective_user).id, leaders.voting.id
+    )
     response = _build_response(leaders, your_vote)
     await send_response(update, context, response)
 
 
+def is_voting_has_passed(voting: Voting):
+    return datetime.now() >= datetime.strptime(voting.voting_finish, config.DATE_FORMAT)
+
+
 def _build_response(leaders: VoteLeaders, your_vote: Vote | None) -> str:
+    is_voting_has_passed_ = is_voting_has_passed(leaders.voting)
     return message_texts.VOTE_RESULTS.format(
+        voting_type=("прошедшего" if is_voting_has_passed_ else "текущего"),
         books=_get_books_list_formatted(leaders),
         voting_start=leaders.voting.voting_start,
         voting_finish=leaders.voting.voting_finish,
         votes_count=leaders.votes_count,
-        your_vote=_get_your_vote_formatted(your_vote),
+        your_vote=(
+            _get_your_vote_formatted(your_vote) if not is_voting_has_passed_ else ""
+        ),
     )
 
 

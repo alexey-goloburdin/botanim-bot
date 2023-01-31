@@ -100,7 +100,7 @@ SUCCESS_VOTE = """Ура, ты выбрал {books_count}:
 
 SUCCESS_VOTE_BOOK = """{index}. {book.name}"""
 
-VOTE_RESULTS = """<b>ТОП книг голосования</b>
+VOTE_RESULTS = """<b>ТОП книг {voting_type} голосования</b>
 
 {books}
 

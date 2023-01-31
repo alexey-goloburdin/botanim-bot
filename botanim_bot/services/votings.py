@@ -58,11 +58,11 @@ async def get_actual_voting() -> Voting | None:
     if not voting:
         return None
 
-    return Voting(
-        id=voting["id"],
-        voting_start=voting["voting_start"],
-        voting_finish=voting["voting_finish"],
-    )
+    return _build_voting(voting)
+
+
+async def get_actual_or_last_voting() -> Voting | None:
+    return await get_actual_voting() or await _get_last_voting()
 
 
 async def save_vote(telegram_user_id: int, books: Iterable[Book]) -> None:
@@ -95,10 +95,7 @@ async def save_vote(telegram_user_id: int, books: Iterable[Book]) -> None:
     await execute("commit")
 
 
-async def get_user_actual_vote(user_id: int) -> Vote | None:
-    actual_voting = await get_actual_voting()
-    if not actual_voting:
-        return None
+async def get_user_vote(user_id: int, voting_id: int) -> Vote | None:
     sql = """
         SELECT
             b1.name AS first_book_name,
@@ -110,8 +107,9 @@ async def get_user_actual_vote(user_id: int) -> Vote | None:
         LEFT JOIN book b3 ON v.third_book_id =b3.id
         WHERE v.user_id=:user_id
             AND v.vote_id=:voting_id
+            AND v.vote_id=:voting_id
     """
-    vote = await fetch_one(sql, {"user_id": user_id, "voting_id": actual_voting.id})
+    vote = await fetch_one(sql, {"user_id": user_id, "voting_id": voting_id})
     if not vote:
         return None
     return Vote(
@@ -119,3 +117,26 @@ async def get_user_actual_vote(user_id: int) -> Vote | None:
         second_book_name=vote["second_book_name"],
         third_book_name=vote["third_book_name"],
     )
+
+
+def _build_voting(voting_db_row: dict) -> Voting:
+    return Voting(
+        id=voting_db_row["id"],
+        voting_start=voting_db_row["voting_start"],
+        voting_finish=voting_db_row["voting_finish"],
+    )
+
+
+async def _get_last_voting() -> Voting | None:
+    sql = """
+        SELECT id, voting_start, voting_finish
+        FROM voting
+        WHERE voting_finish < current_date
+        ORDER BY voting_finish desc
+        LIMIT 1
+    """
+    last_voting = await fetch_one(sql)
+    if not last_voting:
+        return None
+
+    return _build_voting(last_voting)

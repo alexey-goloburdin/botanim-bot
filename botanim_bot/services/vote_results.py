@@ -4,7 +4,7 @@ from typing import Iterable, TypeVar, TypedDict, cast
 from botanim_bot import config
 from botanim_bot.db import fetch_all
 from botanim_bot.services.books import get_book_names_by_ids
-from botanim_bot.services.votings import Voting, get_actual_voting
+from botanim_bot.services.votings import Voting, get_actual_or_last_voting
 from botanim_bot.services import schulze
 
 
@@ -26,7 +26,7 @@ class VoteLeaders:
 
 
 async def get_leaders() -> VoteLeaders | None:
-    actual_voting = await get_actual_voting()
+    actual_voting = await get_actual_or_last_voting()
     if actual_voting is None:
         return None
 
