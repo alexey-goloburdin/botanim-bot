@@ -26,9 +26,11 @@ sudo make altinstall
 curl -sSL https://install.python-poetry.org | python3 -
 ```
 
-Клонируем репозиторий:
+Клонируем репозиторий в `~/code/botanim_bot`:
 
 ```bash
+mkdir -p ~/code/
+cd ~/code
 git clone https://github.com/alexey-goloburdin/botanim-bot.git
 cd botanim-bot
 ```
@@ -66,10 +68,11 @@ which python
 
 Скопируем путь до интерпретатора Python в виртуальном окружении.
 
-Настроим systemd-юнит для автоматического запуска бота, подставив скопированный путь в ExecStart:
+Настроим systemd-юнит для автоматического запуска бота, подставив скопированный путь в ExecStart, а также убедившись,
+что директория до проекта (в данном случае `/home/www/code/botanim_bot`) у вас такая же:
 
 ```
-tee /etc/systemd/system/botanimbot.service << END
+sudo tee /etc/systemd/system/botanimbot.service << END
 [Unit]
 Description=Botanim Telegram bot
 After=network.target

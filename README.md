@@ -29,7 +29,6 @@ cp botanim_bot/.env.example botanim_bot/.env
 
 ```bash
 poetry install
-cd botanim_bot
 poetry run python -m botanim_bot
 ```
 
