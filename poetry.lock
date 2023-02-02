@@ -110,7 +110,7 @@ files = [
 name = "flake8"
 version = "6.0.0"
 description = "the modular source code checker: pep8 pyflakes and co"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.8.1"
 files = [
@@ -139,6 +139,21 @@ Flake8 = ">=5"
 
 [package.extras]
 dev = ["pyTest", "pyTest-cov"]
+
+[[package]]
+name = "flake8-use-pathlib"
+version = "0.3.0"
+description = "A plugin for flake8 finding use of functions that can be replaced by pathlib module."
+category = "main"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "flake8-use-pathlib-0.3.0.tar.gz", hash = "sha256:0ef19f255a51601bcf04ff54f25ef8a466dff68210cd95b4f1db36a78ace5223"},
+    {file = "flake8_use_pathlib-0.3.0-py3-none-any.whl", hash = "sha256:c7b6d71575b575f7d70ebf3f1d7f2dd6685e401d3280208f1db9dbb6bfa32608"},
+]
+
+[package.dependencies]
+flake8 = ">=3.6"
 
 [[package]]
 name = "h11"
@@ -292,7 +307,7 @@ files = [
 name = "mccabe"
 version = "0.7.0"
 description = "McCabe checker, plugin for flake8"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 files = [
@@ -374,7 +389,7 @@ test = ["appdirs (==1.4.4)", "covdefaults (>=2.2.2)", "pytest (>=7.2)", "pytest-
 name = "pycodestyle"
 version = "2.10.0"
 description = "Python style guide checker"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 files = [
@@ -386,7 +401,7 @@ files = [
 name = "pyflakes"
 version = "3.0.1"
 description = "passive checker of Python programs"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 files = [
@@ -514,4 +529,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "d4fadfcfc09907dcdc79b235ca3ec8f1f1760bbe01da9b534054fa17f86ab1dd"
+content-hash = "18fefad3938371a064acb83d36f0122caaeeafaba54dce57cd392ebdcf834970"
