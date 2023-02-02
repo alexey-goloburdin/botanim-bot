@@ -7,7 +7,7 @@ from botanim_bot.services.books import Book, format_book_name
 from botanim_bot.services.users import insert_user
 from botanim_bot import config
 from botanim_bot.db import execute, fetch_one
-from botanim_bot.services.exceptions import UserInNotVoteMode, NoActualVoting
+from botanim_bot.services.exceptions import UserInNotVoteModeError, NoActualVotingError
 from botanim_bot.services.vote_mode import (
     is_user_in_vote_mode,
     remove_user_from_vote_mode,
@@ -24,10 +24,11 @@ class Voting:
     voting_finish: str
 
     def is_voting_has_passed(self) -> bool:
-        return (
-            datetime.now().date()
-            > datetime.strptime(self.voting_finish, config.DATE_FORMAT).date()
-        )
+        now_date = datetime.now().date()
+        finish_voting_date = datetime.strptime(self.voting_finish,
+                                               config.DATE_FORMAT).date()
+
+        return finish_voting_date < now_date
 
     def __post_init__(self):
         """Set up voting_start and voting_finish to needed string format"""
@@ -74,11 +75,11 @@ async def get_actual_or_last_voting() -> Voting | None:
 async def save_vote(telegram_user_id: int, books: Iterable[Book]) -> None:
     await insert_user(telegram_user_id)
     if not await is_user_in_vote_mode(telegram_user_id):
-        raise UserInNotVoteMode
+        raise UserInNotVoteModeError
 
     actual_voting = await get_actual_voting()
     if actual_voting is None:
-        raise NoActualVoting
+        raise NoActualVotingError
     sql = """
         INSERT OR REPLACE INTO vote
             (vote_id, user_id, first_book_id, second_book_id, third_book_id)

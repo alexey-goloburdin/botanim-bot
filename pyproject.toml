@@ -29,5 +29,9 @@ flake8-pyproject = "==1.2.2"
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
+[tool.flake8]
+max-line-length = 88
+
+
 [tool.pyright]
 reportUnnecessaryTypeIgnoreComment="warning"
