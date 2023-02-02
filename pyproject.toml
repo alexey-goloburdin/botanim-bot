@@ -21,7 +21,8 @@ pyright = "==1.1.291"
 
 # flake8 section
 flake8 = "==6.0.0"
-pep8-naming = "^0.13.3"
+pep8-naming = "==0.13.3"
+flake8-pyproject = "==1.2.2"
 
 
 [build-system]
