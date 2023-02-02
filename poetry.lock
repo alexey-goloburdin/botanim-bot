@@ -323,6 +323,21 @@ files = [
 ]
 
 [[package]]
+name = "pep8-naming"
+version = "0.13.3"
+description = "Check PEP-8 naming conventions, plugin for flake8"
+category = "dev"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "pep8-naming-0.13.3.tar.gz", hash = "sha256:1705f046dfcd851378aac3be1cd1551c7c1e5ff363bacad707d43007877fa971"},
+    {file = "pep8_naming-0.13.3-py3-none-any.whl", hash = "sha256:1a86b8c71a03337c97181917e2b472f0f5e4ccb06844a0d6f0a33522549e7a80"},
+]
+
+[package.dependencies]
+flake8 = ">=5.0.0"
+
+[[package]]
 name = "platformdirs"
 version = "2.6.2"
 description = "A small Python package for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
@@ -452,14 +467,14 @@ files = [
 
 [[package]]
 name = "setuptools"
-version = "66.1.1"
+version = "67.1.0"
 description = "Easily download, build, install, upgrade, and uninstall Python packages"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "setuptools-66.1.1-py3-none-any.whl", hash = "sha256:6f590d76b713d5de4e49fe4fbca24474469f53c83632d5d0fd056f7ff7e8112b"},
-    {file = "setuptools-66.1.1.tar.gz", hash = "sha256:ac4008d396bc9cd983ea483cb7139c0240a07bbc74ffb6232fceffedc6cf03a8"},
+    {file = "setuptools-67.1.0-py3-none-any.whl", hash = "sha256:a7687c12b444eaac951ea87a9627c4f904ac757e7abdc5aac32833234af90378"},
+    {file = "setuptools-67.1.0.tar.gz", hash = "sha256:e261cdf010c11a41cb5cb5f1bf3338a7433832029f559a6a7614bd42a967c300"},
 ]
 
 [package.extras]
@@ -482,4 +497,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "1aeea1bcc411f12b6f924daaf06c0a863e42556460fe9e2e3f7994049d1802e4"
+content-hash = "241dfa95f9313db4a7a3fa995bbfc8f162c2c5aee6fc2cde2f2c1466c76f4418"

@@ -40,10 +40,7 @@ async def fetch_one(
 
 
 async def execute(
-    sql: LiteralString,
-    params: Iterable[Any] | None = None,
-    *,
-    autocommit: bool = True
+    sql: LiteralString, params: Iterable[Any] | None = None, *, autocommit: bool = True
 ) -> None:
     db = await get_db()
     args: tuple[LiteralString, Iterable[Any] | None] = (sql, params)
