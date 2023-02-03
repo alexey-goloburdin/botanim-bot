@@ -18,7 +18,7 @@ from botanim_bot.templates import render_template
 async def vote_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await is_user_in_vote_mode(cast(User, update.effective_user).id):
         await send_response(
-            update, context, response=render_template("vote_user_not_in_right_mode.tpl")
+            update, context, response=render_template("vote_user_not_in_right_mode.j2")
         )
         return
 
@@ -27,14 +27,14 @@ async def vote_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     books_positional_numbers = _get_numbers_from_text(user_message)
     if not _is_numbers_sufficient(books_positional_numbers):
         await send_response(
-            update, context, response=render_template("vote_incorrect_input.tpl")
+            update, context, response=render_template("vote_incorrect_input.j2")
         )
         return
 
     selected_books = await get_books_by_positional_numbers(books_positional_numbers)
     if not _is_finded_books_count_sufficient(selected_books):
         await send_response(
-            update, context, render_template("vote_incorrect_books.tpl")
+            update, context, render_template("vote_incorrect_books.j2")
         )
         return
 
@@ -42,12 +42,12 @@ async def vote_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await save_vote(cast(User, update.effective_user).id, selected_books)
     except NoActualVoting:
         await send_response(
-            update, context, response=render_template("vote_no_actual_voting.tpl")
+            update, context, response=render_template("vote_no_actual_voting.j2")
         )
         return
     except UserInNotVoteMode:
         await send_response(
-            update, context, response=render_template("vote_user_not_in_right_mode.tpl")
+            update, context, response=render_template("vote_user_not_in_right_mode.j2")
         )
         return
 
@@ -56,7 +56,7 @@ async def vote_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
         update,
         context,
         response=render_template(
-            "vote_success.tpl",
+            "vote_success.j2",
             {
                 "selected_books": selected_books,
                 "books_count": f"{books_count} {books_to_words(books_count)}",

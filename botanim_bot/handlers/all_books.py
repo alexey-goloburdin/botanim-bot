@@ -19,7 +19,7 @@ async def all_books(update: Update, context: ContextTypes.DEFAULT_TYPE):
         update,
         context,
         render_template(
-            "category_with_books.tpl",
+            "category_with_books.j2",
             {"category": categories_with_books[0], "start_index": None},
         ),
         get_categories_keyboard(
@@ -39,7 +39,7 @@ async def all_books_button(update: Update, _: ContextTypes.DEFAULT_TYPE):
     current_category_index = _get_current_category_index(query.data)
     await query.edit_message_text(
         text=render_template(
-            "category_with_books.tpl",
+            "category_with_books.j2",
             {
                 "category": categories_with_books[current_category_index],
                 "start_index": None,
