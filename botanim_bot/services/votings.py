@@ -1,18 +1,16 @@
+import logging
 from dataclasses import dataclass
 from datetime import datetime
-import logging
 from typing import Iterable
 
-from botanim_bot.services.books import Book, format_book_name
-from botanim_bot.services.users import insert_user
 from botanim_bot import config
 from botanim_bot.db import execute, fetch_one
-from botanim_bot.services.exceptions import UserInNotVoteModeError, NoActualVotingError
-from botanim_bot.services.vote_mode import (
-    is_user_in_vote_mode,
-    remove_user_from_vote_mode,
-)
-
+from botanim_bot.services.books import Book, format_book_name
+from botanim_bot.services.exceptions import (NoActualVotingError,
+                                             UserInNotVoteModeError)
+from botanim_bot.services.users import insert_user
+from botanim_bot.services.vote_mode import (is_user_in_vote_mode,
+                                            remove_user_from_vote_mode)
 
 logger = logging.getLogger(__name__)
 

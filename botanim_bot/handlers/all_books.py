@@ -2,11 +2,10 @@ import telegram
 from telegram import Update
 from telegram.ext import ContextTypes
 
-
-from botanim_bot.handlers.response import send_response
-from botanim_bot.handlers.keyboards import get_categories_keyboard
-from botanim_bot.services.books import get_all_books
 from botanim_bot import config
+from botanim_bot.handlers.keyboards import get_categories_keyboard
+from botanim_bot.handlers.response import send_response
+from botanim_bot.services.books import get_all_books
 from botanim_bot.templates import render_template
 
 
