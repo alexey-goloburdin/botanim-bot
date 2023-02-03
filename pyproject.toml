@@ -30,7 +30,8 @@ max-line-length = 88
 
 [tool.ruff]
 select = ["E", "F",
-          "N", "I"]
+          "N", "I",
+          "S"]
 
 [tool.pyright]
 reportUnnecessaryTypeIgnoreComment="warning"
