@@ -53,11 +53,12 @@ def main():
     application.run_polling()
 
 
-try:
-    main()
-except Exception:
-    import traceback
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception:
+        import traceback
 
-    logger.warning(traceback.format_exc())
-finally:
-    close_db()
+        logger.warning(traceback.format_exc())
+    finally:
+        close_db()
