@@ -5,10 +5,10 @@ import httpx
 from botanim_bot import config
 
 
-def is_user_in_channel(user_id: int, channel_id: int) -> bool:
+async def is_user_in_channel(user_id: int, channel_id: int) -> bool:
     """Returns True if user `user_id` in `channel_id` now"""
     url = _get_tg_url(method="getChatMember", chat_id=channel_id, user_id=user_id)
-    json_response = httpx.get(url).json()
+    json_response = await httpx.get(url).json()
     try:
         return json_response["result"]["status"] in (
             "member",
