@@ -20,7 +20,7 @@ from botanim_bot.templates import render_template
 def validate_user(handler):
     async def wrapped(update: Update, context: ContextTypes.DEFAULT_TYPE):
         user_id = cast(User, update.effective_user).id
-        if not is_user_in_channel(user_id, config.TELEGRAM_BOTANIM_CHANNEL_ID):
+        if not await is_user_in_channel(user_id, config.TELEGRAM_BOTANIM_CHANNEL_ID):
             await send_response(
                 update, context, response=render_template("vote_cant_vote.tpl")
             )
