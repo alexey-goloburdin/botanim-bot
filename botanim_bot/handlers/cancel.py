@@ -9,4 +9,4 @@ from botanim_bot.services.vote_mode import remove_user_from_vote_mode
 
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await remove_user_from_vote_mode(cast(User, update.effective_user).id)
-    await send_response(update, context, response=render_template("start.tpl"))
+    await send_response(update, context, response=render_template("start.j2"))

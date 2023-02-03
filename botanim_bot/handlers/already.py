@@ -12,6 +12,6 @@ async def already(update: Update, context: ContextTypes.DEFAULT_TYPE):
         update,
         context,
         response=render_template(
-            "already.tpl", {"already_read_books": already_read_books}
+            "already.j2", {"already_read_books": already_read_books}
         ),
     )

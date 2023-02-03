@@ -6,4 +6,4 @@ from botanim_bot.templates import render_template
 
 
 async def help_(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await send_response(update, context, response=render_template("help.tpl"))
+    await send_response(update, context, response=render_template("help.j2"))

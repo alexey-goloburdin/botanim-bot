@@ -22,7 +22,7 @@ def validate_user(handler):
         user_id = cast(User, update.effective_user).id
         if not await is_user_in_channel(user_id, config.TELEGRAM_BOTANIM_CHANNEL_ID):
             await send_response(
-                update, context, response=render_template("vote_cant_vote.tpl")
+                update, context, response=render_template("vote_cant_vote.j2")
             )
             return
         await handler(update, context)
@@ -34,7 +34,7 @@ def validate_user(handler):
 async def vote(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if await get_actual_voting() is None:
         await send_response(
-            update, context, response=render_template("vote_no_actual_voting.tpl")
+            update, context, response=render_template("vote_no_actual_voting.j2")
         )
         return
 
@@ -51,7 +51,7 @@ async def vote(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await set_user_in_vote_mode(cast(User, update.effective_user).id)
     await update.message.reply_text(
         render_template(
-            "category_with_books.tpl",
+            "category_with_books.j2",
             {"category": current_category, "start_index": category_books_start_index},
         ),
         reply_markup=get_categories_keyboard(
@@ -60,7 +60,7 @@ async def vote(update: Update, context: ContextTypes.DEFAULT_TYPE):
         parse_mode=telegram.constants.ParseMode.HTML,
     )
     await send_response(
-        update, context, response=render_template("vote_description.tpl")
+        update, context, response=render_template("vote_description.j2")
     )
 
 
@@ -80,7 +80,7 @@ async def vote_button(update: Update, _: ContextTypes.DEFAULT_TYPE):
     )
     await query.edit_message_text(
         render_template(
-            "category_with_books.tpl",
+            "category_with_books.j2",
             {"category": current_category, "start_index": category_books_start_index},
         ),
         reply_markup=get_categories_keyboard(

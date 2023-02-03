@@ -20,7 +20,8 @@ logger = logging.getLogger(__name__)
 
 
 if not config.TELEGRAM_BOT_TOKEN or not config.TELEGRAM_BOTANIM_CHANNEL_ID:
-    exit("Specify TELEGRAM_BOT_TOKEN and TELEGRAM_BOTANIM_CHANNEL_ID env variables")
+    raise ValueError("TELEGRAM_BOT_TOKEN and TELEGRAM_BOTANIM_CHANNEL_ID env variables "
+                     "wasn't implemented in .env (both should be initialized).")
 
 
 def main():
@@ -53,11 +54,12 @@ def main():
     application.run_polling()
 
 
-try:
-    main()
-except Exception:
-    import traceback
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception:
+        import traceback
 
-    logger.warning(traceback.format_exc())
-finally:
-    close_db()
+        logger.warning(traceback.format_exc())
+    finally:
+        close_db()
