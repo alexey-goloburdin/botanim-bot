@@ -20,11 +20,12 @@ jinja2 = "==3.1.2"
 flake8 = "==6.0.0"
 flake8-pyproject = "==1.2.2"
 pep8-naming = "==0.13.3"
-flake8-isort = "^6.0.0"
+flake8-isort = "==6.0.0"
 
 # other dev depencies
 pyright = "==1.1.291"
-isort = "^5.12.0"
+black = "==23.1.0"
+isort = "==5.12.0"
 
 [build-system]
 requires = ["poetry-core"]
@@ -32,6 +33,9 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.flake8]
 max-line-length = 88
+
+[tool.isort]
+profile = "black"
 
 [tool.pyright]
 reportUnnecessaryTypeIgnoreComment="warning"

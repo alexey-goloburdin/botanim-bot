@@ -6,11 +6,12 @@ from typing import Iterable
 from botanim_bot import config
 from botanim_bot.db import execute, fetch_one
 from botanim_bot.services.books import Book, format_book_name
-from botanim_bot.services.exceptions import (NoActualVotingError,
-                                             UserInNotVoteModeError)
+from botanim_bot.services.exceptions import NoActualVotingError, UserInNotVoteModeError
 from botanim_bot.services.users import insert_user
-from botanim_bot.services.vote_mode import (is_user_in_vote_mode,
-                                            remove_user_from_vote_mode)
+from botanim_bot.services.vote_mode import (
+    is_user_in_vote_mode,
+    remove_user_from_vote_mode,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -23,8 +24,9 @@ class Voting:
 
     def is_voting_has_passed(self) -> bool:
         now_date = datetime.now().date()
-        finish_voting_date = datetime.strptime(self.voting_finish,
-                                               config.DATE_FORMAT).date()
+        finish_voting_date = datetime.strptime(
+            self.voting_finish, config.DATE_FORMAT
+        ).date()
 
         return finish_voting_date < now_date
 

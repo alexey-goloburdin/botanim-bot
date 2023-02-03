@@ -7,8 +7,10 @@ from telegram.ext import ContextTypes
 from botanim_bot import config
 from botanim_bot.handlers.keyboards import get_categories_keyboard
 from botanim_bot.handlers.response import send_response
-from botanim_bot.services.books import (calculate_category_books_start_index,
-                                        get_not_started_books)
+from botanim_bot.services.books import (
+    calculate_category_books_start_index,
+    get_not_started_books,
+)
 from botanim_bot.services.validation import is_user_in_channel
 from botanim_bot.services.vote_mode import set_user_in_vote_mode
 from botanim_bot.services.votings import get_actual_voting

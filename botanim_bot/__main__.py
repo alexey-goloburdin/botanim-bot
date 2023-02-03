@@ -1,7 +1,12 @@
 import logging
 
-from telegram.ext import (ApplicationBuilder, CallbackQueryHandler,
-                          CommandHandler, MessageHandler, filters)
+from telegram.ext import (
+    ApplicationBuilder,
+    CallbackQueryHandler,
+    CommandHandler,
+    MessageHandler,
+    filters,
+)
 
 from botanim_bot import config, handlers
 from botanim_bot.db import close_db

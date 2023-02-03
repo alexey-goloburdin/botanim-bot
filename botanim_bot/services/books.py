@@ -20,8 +20,9 @@ class Book:
     def is_started(self) -> bool:
         if self.read_start is not None:
             now_date = datetime.now().date()
-            start_read_date = datetime.strptime(self.read_start,
-                                                config.DATE_FORMAT).date()
+            start_read_date = datetime.strptime(
+                self.read_start, config.DATE_FORMAT
+            ).date()
 
             return start_read_date >= now_date
 
@@ -30,8 +31,9 @@ class Book:
     def is_finished(self) -> bool:
         if self.read_finish is not None:
             now_date = datetime.now().date()
-            finish_read_date = datetime.strptime(self.read_finish,
-                                                 config.DATE_FORMAT).date()
+            finish_read_date = datetime.strptime(
+                self.read_finish, config.DATE_FORMAT
+            ).date()
 
             return finish_read_date <= now_date
 
@@ -40,8 +42,9 @@ class Book:
     def is_planned(self) -> bool:
         if self.read_start is not None:
             now_date = datetime.now().date()
-            start_read_date = datetime.strptime(self.read_start,
-                                                config.DATE_FORMAT).date()
+            start_read_date = datetime.strptime(
+                self.read_start, config.DATE_FORMAT
+            ).date()
 
             return start_read_date >= now_date
 

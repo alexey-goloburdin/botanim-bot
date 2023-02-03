@@ -18,7 +18,7 @@ def _add_remaining_ranks(d, candidate, remaining_ranks, weight):
 
 def _add_ranks_to_d(d, ranks, weight):
     for i, rank in enumerate(ranks):
-        remaining_ranks = ranks[(i + 1):]
+        remaining_ranks = ranks[(i + 1) :]
         for candidate in rank:
             _add_remaining_ranks(d, candidate, remaining_ranks, weight)
 
