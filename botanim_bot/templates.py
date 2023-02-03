@@ -25,8 +25,6 @@ def _get_template_env():
                                  lstrip_blocks=True,
                                  autoescape=True)
 
-        setattr(_get_template_env,
-                "template_env",
-                env)
+        _get_template_env.template_env = env
 
-    return getattr(_get_template_env, "template_env")
+    return _get_template_env.template_env

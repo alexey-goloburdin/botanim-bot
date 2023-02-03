@@ -12,7 +12,7 @@ async def get_db() -> aiosqlite.Connection:
         db = await aiosqlite.connect(config.SQLITE_DB_FILE)
         get_db.db = db
 
-    return getattr(get_db, "db")
+    return get_db.db
 
 
 async def fetch_all(

@@ -1,4 +1,5 @@
 import logging
+import sys
 
 from telegram.ext import (
     ApplicationBuilder,
@@ -35,7 +36,7 @@ logger = logging.getLogger(__name__)
 
 
 if not config.TELEGRAM_BOT_TOKEN or not config.TELEGRAM_BOTANIM_CHANNEL_ID:
-    exit("Specify TELEGRAM_BOT_TOKEN and TELEGRAM_BOTANIM_CHANNEL_ID env variables")
+    sys.exit("Specify TELEGRAM_BOT_TOKEN and TELEGRAM_BOTANIM_CHANNEL_ID env variables")
 
 
 def main():
