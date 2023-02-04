@@ -1,14 +1,11 @@
-DAYS = ("книга", "книги", "книг")
-
-
-def books_to_words(books_count: int) -> str:
-    if 11 <= books_count % 100 <= 19:
+def num_to_words(count: int, word_forms: tuple[str, str, str]) -> str:
+    if 11 <= count % 100 <= 19:
         p = 2
-    elif books_count % 10 == 1:
+    elif count % 10 == 1:
         p = 0
-    elif 2 <= books_count % 10 <= 4:
+    elif 2 <= count % 10 <= 4:
         p = 1
     else:
         p = 2
 
-    return DAYS[p]
+    return word_forms[p]

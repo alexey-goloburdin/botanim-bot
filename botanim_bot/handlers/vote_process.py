@@ -9,7 +9,7 @@ from botanim_bot.handlers.response import send_response
 from botanim_bot.handlers.vote import validate_user
 from botanim_bot.services.books import Book, get_books_by_positional_numbers
 from botanim_bot.services.exceptions import NoActualVotingError, UserInNotVoteModeError
-from botanim_bot.services.num_to_words import books_to_words
+from botanim_bot.services.num_to_words import num_to_words
 from botanim_bot.services.vote_mode import is_user_in_vote_mode
 from botanim_bot.services.votings import save_vote
 from botanim_bot.templates import render_template
@@ -51,6 +51,8 @@ async def vote_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     books_count = len(selected_books)
+    word_in_correct_form = num_to_words(books_count, ("книга", "книги", "книг"))
+
     await send_response(
         update,
         context,
@@ -58,7 +60,7 @@ async def vote_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "vote_success.j2",
             {
                 "selected_books": selected_books,
-                "books_count": f"{books_count} {books_to_words(books_count)}",
+                "books_count": f"{books_count} {word_in_correct_form}",
             },
         ),
     )
