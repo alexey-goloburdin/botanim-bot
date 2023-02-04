@@ -15,7 +15,6 @@ from telegram.ext import ContextTypes
 from botanim_bot import config
 
 
-
 @validate_user
 async def vote_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await is_user_in_vote_mode(cast(User, update.effective_user).id):
