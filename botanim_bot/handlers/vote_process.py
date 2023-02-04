@@ -1,10 +1,6 @@
 import re
 from typing import cast
 
-from telegram import Update, User
-from telegram.ext import ContextTypes
-
-from botanim_bot import config
 from botanim_bot.handlers.response import send_response
 from botanim_bot.handlers.vote import validate_user
 from botanim_bot.services.books import Book, get_books_by_positional_numbers
@@ -13,6 +9,11 @@ from botanim_bot.services.exceptions import NoActualVotingError, UserInNotVoteMo
 from botanim_bot.services.vote_mode import is_user_in_vote_mode
 from botanim_bot.services.votings import save_vote
 from botanim_bot.templates import render_template
+from telegram import Update, User
+from telegram.ext import ContextTypes
+
+from botanim_bot import config
+
 
 
 @validate_user
