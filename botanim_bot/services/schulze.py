@@ -49,7 +49,7 @@ def _compute_d(weighted_ranks, candidates):
     return d
 
 
-def _compute_p(d, candidates):
+def _compute_p(d, candidates):  # noqa: C901 TODO: need refactor, large nesting
     """Computes the p array in the Schulze method.
 
     p[V,W] is the strength of the strongest path from candidate V to W.
