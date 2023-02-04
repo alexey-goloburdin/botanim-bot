@@ -34,9 +34,7 @@ async def vote_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     selected_books = await get_books_by_positional_numbers(books_positional_numbers)
     if not _is_finded_books_count_sufficient(selected_books):
-        await send_response(
-            update, context, render_template("vote_incorrect_books.j2")
-        )
+        await send_response(update, context, render_template("vote_incorrect_books.j2"))
         return
 
     try:

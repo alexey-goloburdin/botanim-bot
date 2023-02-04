@@ -1,5 +1,4 @@
 import logging
-import sys
 
 from telegram.ext import (
     ApplicationBuilder,
@@ -36,8 +35,10 @@ logger = logging.getLogger(__name__)
 
 
 if not config.TELEGRAM_BOT_TOKEN or not config.TELEGRAM_BOTANIM_CHANNEL_ID:
-    raise ValueError("TELEGRAM_BOT_TOKEN and TELEGRAM_BOTANIM_CHANNEL_ID env variables "
-                     "wasn't implemented in .env (both should be initialized).")
+    raise ValueError(
+        "TELEGRAM_BOT_TOKEN and TELEGRAM_BOTANIM_CHANNEL_ID env variables "
+        "wasn't implemented in .env (both should be initialized)."
+    )
 
 
 def main():
