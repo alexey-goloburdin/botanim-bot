@@ -29,9 +29,11 @@ build-backend = "poetry.core.masonry.api"
 max-line-length = 88
 
 [tool.ruff]
-select = ["E", "F", "N", "I",
-          "S", "B", "ISC", "PL",
-          "T20", "C90", "Q", "PTH", "ARG"]
+select = ["F", "E", "W", "C90",
+          "I", "N", "S", "B", "A",
+          "ISC", "T20", "Q", "PTH", "PL"]
+
+ignore = ["A003"]
 
 [tool.pyright]
 reportUnnecessaryTypeIgnoreComment="warning"

@@ -121,59 +121,6 @@ files = [
 ]
 
 [[package]]
-name = "flake8"
-version = "6.0.0"
-description = "the modular source code checker: pep8 pyflakes and co"
-category = "dev"
-optional = false
-python-versions = ">=3.8.1"
-files = [
-    {file = "flake8-6.0.0-py2.py3-none-any.whl", hash = "sha256:3833794e27ff64ea4e9cf5d410082a8b97ff1a06c16aa3d2027339cd0f1195c7"},
-    {file = "flake8-6.0.0.tar.gz", hash = "sha256:c61007e76655af75e6785a931f452915b371dc48f56efd765247c8fe68f2b181"},
-]
-
-[package.dependencies]
-mccabe = ">=0.7.0,<0.8.0"
-pycodestyle = ">=2.10.0,<2.11.0"
-pyflakes = ">=3.0.0,<3.1.0"
-
-[[package]]
-name = "flake8-isort"
-version = "6.0.0"
-description = "flake8 plugin that integrates isort ."
-category = "dev"
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "flake8-isort-6.0.0.tar.gz", hash = "sha256:537f453a660d7e903f602ecfa36136b140de279df58d02eb1b6a0c84e83c528c"},
-    {file = "flake8_isort-6.0.0-py3-none-any.whl", hash = "sha256:aa0cac02a62c7739e370ce6b9c31743edac904bae4b157274511fc8a19c75bbc"},
-]
-
-[package.dependencies]
-flake8 = "*"
-isort = ">=5.0.0,<6"
-
-[package.extras]
-test = ["pytest"]
-
-[[package]]
-name = "flake8-pyproject"
-version = "1.2.2"
-description = "Flake8 plug-in loading the configuration from pyproject.toml"
-category = "dev"
-optional = false
-python-versions = ">= 3.6"
-files = [
-    {file = "flake8_pyproject-1.2.2-py3-none-any.whl", hash = "sha256:52d412219e7db6227faa654675b1435947b11d49b453f3eced760f19bdd6f06a"},
-]
-
-[package.dependencies]
-Flake8 = ">=5"
-
-[package.extras]
-dev = ["pyTest", "pyTest-cov"]
-
-[[package]]
 name = "h11"
 version = "0.14.0"
 description = "A pure-Python, bring-your-own-I/O implementation of HTTP/1.1"
@@ -242,24 +189,6 @@ files = [
     {file = "idna-3.4-py3-none-any.whl", hash = "sha256:90b77e79eaa3eba6de819a0c442c0b4ceefc341a7a2ab77d7562bf49f425c5c2"},
     {file = "idna-3.4.tar.gz", hash = "sha256:814f528e8dead7d329833b91c5faa87d60bf71824cd12a7530b5526063d02cb4"},
 ]
-
-[[package]]
-name = "isort"
-version = "5.12.0"
-description = "A Python utility / library to sort Python imports."
-category = "dev"
-optional = false
-python-versions = ">=3.8.0"
-files = [
-    {file = "isort-5.12.0-py3-none-any.whl", hash = "sha256:f84c2818376e66cf843d497486ea8fed8700b340f308f076c6fb1229dff318b6"},
-    {file = "isort-5.12.0.tar.gz", hash = "sha256:8bef7dde241278824a6d83f44a544709b065191b95b6e50894bdc722fcba0504"},
-]
-
-[package.extras]
-colors = ["colorama (>=0.4.3)"]
-pipfile-deprecated-finder = ["pip-shims (>=0.5.2)", "pipreqs", "requirementslib"]
-plugins = ["setuptools"]
-requirements-deprecated-finder = ["pip-api", "pipreqs"]
 
 [[package]]
 name = "jinja2"
@@ -340,18 +269,6 @@ files = [
 ]
 
 [[package]]
-name = "mccabe"
-version = "0.7.0"
-description = "McCabe checker, plugin for flake8"
-category = "dev"
-optional = false
-python-versions = ">=3.6"
-files = [
-    {file = "mccabe-0.7.0-py2.py3-none-any.whl", hash = "sha256:6c2d30ab6be0e4a46919781807b4f0d834ebdd6c6e3dca0bda5a15f863427b6e"},
-    {file = "mccabe-0.7.0.tar.gz", hash = "sha256:348e0240c33b60bbdf4e523192ef919f28cb2c3d7d5c7794f74009290f236325"},
-]
-
-[[package]]
 name = "mypy-extensions"
 version = "0.4.3"
 description = "Experimental type system extensions for programs checked with the mypy typechecker."
@@ -403,21 +320,6 @@ files = [
 ]
 
 [[package]]
-name = "pep8-naming"
-version = "0.13.3"
-description = "Check PEP-8 naming conventions, plugin for flake8"
-category = "dev"
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "pep8-naming-0.13.3.tar.gz", hash = "sha256:1705f046dfcd851378aac3be1cd1551c7c1e5ff363bacad707d43007877fa971"},
-    {file = "pep8_naming-0.13.3-py3-none-any.whl", hash = "sha256:1a86b8c71a03337c97181917e2b472f0f5e4ccb06844a0d6f0a33522549e7a80"},
-]
-
-[package.dependencies]
-flake8 = ">=5.0.0"
-
-[[package]]
 name = "platformdirs"
 version = "2.6.2"
 description = "A small Python package for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
@@ -432,30 +334,6 @@ files = [
 [package.extras]
 docs = ["furo (>=2022.12.7)", "proselint (>=0.13)", "sphinx (>=5.3)", "sphinx-autodoc-typehints (>=1.19.5)"]
 test = ["appdirs (==1.4.4)", "covdefaults (>=2.2.2)", "pytest (>=7.2)", "pytest-cov (>=4)", "pytest-mock (>=3.10)"]
-
-[[package]]
-name = "pycodestyle"
-version = "2.10.0"
-description = "Python style guide checker"
-category = "dev"
-optional = false
-python-versions = ">=3.6"
-files = [
-    {file = "pycodestyle-2.10.0-py2.py3-none-any.whl", hash = "sha256:8a4eaf0d0495c7395bdab3589ac2db602797d76207242c17d470186815706610"},
-    {file = "pycodestyle-2.10.0.tar.gz", hash = "sha256:347187bdb476329d98f695c213d7295a846d1152ff4fe9bacb8a9590b8ee7053"},
-]
-
-[[package]]
-name = "pyflakes"
-version = "3.0.1"
-description = "passive checker of Python programs"
-category = "dev"
-optional = false
-python-versions = ">=3.6"
-files = [
-    {file = "pyflakes-3.0.1-py2.py3-none-any.whl", hash = "sha256:ec55bf7fe21fff7f1ad2f7da62363d749e2a470500eab1b555334b67aa1ef8cf"},
-    {file = "pyflakes-3.0.1.tar.gz", hash = "sha256:ec8b276a6b60bd80defed25add7e439881c19e64850afd9b346283d4165fd0fd"},
-]
 
 [[package]]
 name = "pyright"
@@ -538,7 +416,7 @@ idna2008 = ["idna"]
 name = "ruff"
 version = "0.0.240"
 description = "An extremely fast Python linter, written in Rust."
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -603,4 +481,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "fa80f05aadc15e855ebaa8d8ea1a7c8c7e7587826971a4bb0baac2b1a28b87bb"
+content-hash = "6ec21280c5bceae3a9e45eb6763731535898b01583b2d0d80db30e8ca03852ac"
