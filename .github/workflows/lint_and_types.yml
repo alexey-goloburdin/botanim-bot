@@ -21,10 +21,14 @@ jobs:
     - name: Install dependencies
       run: |
         poetry install
-        
-    - name: Linting code by flake8
+
+    - name: Check code formatting by black
       run: |
-        poetry run flake8 --show-source --statistics
+        poetry run black . --check
+        
+    - name: Lint code by ruff
+      run: |
+        poetry run ruff .
         
     - name: Check types by pyright
       run: |
