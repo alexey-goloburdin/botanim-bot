@@ -13,6 +13,6 @@ async def now(update: Update, context: ContextTypes.DEFAULT_TYPE):
         update,
         context,
         response=render_template(
-            "now.tpl", {"now_read_books": now_read_books, "next_book": next_book}
+            "now.j2", {"now_read_books": now_read_books, "next_book": next_book}
         ),
     )

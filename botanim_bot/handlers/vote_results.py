@@ -13,7 +13,7 @@ async def vote_results(update: Update, context: ContextTypes.DEFAULT_TYPE):
     leaders = await get_leaders()
     if leaders is None:
         await send_response(
-            update, context, response=render_template("vote_results_no_data.tpl")
+            update, context, response=render_template("vote_results_no_data.j2")
         )
         return
 
@@ -24,6 +24,6 @@ async def vote_results(update: Update, context: ContextTypes.DEFAULT_TYPE):
         update,
         context,
         response=render_template(
-            "vote_results.tpl", {"leaders": leaders, "your_vote": your_vote}
+            "vote_results.j2", {"leaders": leaders, "your_vote": your_vote}
         ),
     )
