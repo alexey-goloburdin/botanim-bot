@@ -9,7 +9,7 @@ from botanim_bot.handlers.response import send_response
 from botanim_bot.handlers.vote import validate_user
 from botanim_bot.services.books import Book, get_books_by_positional_numbers
 from botanim_bot.services.exceptions import NoActualVotingError, UserInNotVoteModeError
-from botanim_bot.services.num_to_words import books_to_words
+from botanim_bot.services.books_to_words import books_to_words
 from botanim_bot.services.vote_mode import is_user_in_vote_mode
 from botanim_bot.services.votings import save_vote
 from botanim_bot.templates import render_template
