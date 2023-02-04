@@ -18,8 +18,8 @@ def books_to_words(books_count: int) -> str:
 
 
 def _get_last_two_digits(number: int) -> tuple[int, int]:
-    if number < 10:
+    list_of_digits = list(str(number))
+    if len(list_of_digits) == 1:
         return 0, number
 
-    list_of_digits = list(str(number))
     return int(list_of_digits[-2]), int(list_of_digits[-1])
