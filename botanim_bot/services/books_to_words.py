@@ -1,20 +1,25 @@
-DAYS = ["книга", "книги", "книг"]
-
-NOMINATIVE_CASE = [1]
-GENITIVE_SINGULAR_CASE = [2, 3, 4]
-SPECIAL_NUMBERS = list(range(11, 20))
+DAYS = ("книга", "книги", "книг")
 
 
 def books_to_words(books_count: int) -> str:
-    remainder_10 = books_count % 10
-    remainder_100 = books_count % 100
+    penultimate_digit, last_digit = _get_last_two_digits(books_count)
 
-    if remainder_100 in SPECIAL_NUMBERS:
-        return DAYS[2]
+    if penultimate_digit == 1:
+        index = 2
     else:
-        if remainder_10 in NOMINATIVE_CASE:
-            return DAYS[0]
-        elif remainder_10 in GENITIVE_SINGULAR_CASE:
-            return DAYS[1]
+        if last_digit == 1:
+            index = 0
+        elif last_digit in (2, 3, 4):
+            index = 1
         else:
-            return DAYS[2]
+            index = 2
+
+    return DAYS[index]
+
+
+def _get_last_two_digits(number: int) -> tuple[int, int]:
+    if number < 10:
+        return 0, number
+
+    list_of_digits = list(str(number))
+    return int(list_of_digits[-2]), int(list_of_digits[-1])
