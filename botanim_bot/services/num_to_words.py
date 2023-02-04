@@ -1,7 +1,7 @@
 DAYS = ("книга", "книги", "книг")
 
 
-def books_to_words(books_count: int) -> str:
+def nums_to_words(books_count: int) -> str:
     penultimate_digit, last_digit = _get_last_two_digits(books_count)
 
     if penultimate_digit == 1:
