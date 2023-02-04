@@ -17,6 +17,7 @@ def books_to_words(books_count: int) -> str:
     return DAYS[index]
 
 
+
 def _get_last_two_digits(number: int) -> tuple[int, int]:
     list_of_digits = list(str(number))
     if len(list_of_digits) == 1:
