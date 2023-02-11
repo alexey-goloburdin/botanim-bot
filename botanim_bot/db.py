@@ -10,9 +10,9 @@ from botanim_bot import config
 async def get_db() -> aiosqlite.Connection:
     if not getattr(get_db, "db", None):
         db = await aiosqlite.connect(config.SQLITE_DB_FILE)
-        setattr(get_db, "db", db)
+        get_db.db = db
 
-    return getattr(get_db, "db")
+    return get_db.db
 
 
 async def fetch_all(
@@ -40,10 +40,7 @@ async def fetch_one(
 
 
 async def execute(
-    sql: LiteralString,
-    params: Iterable[Any] | None = None,
-    *,
-    autocommit: bool = True
+    sql: LiteralString, params: Iterable[Any] | None = None, *, autocommit: bool = True
 ) -> None:
     db = await get_db()
     args: tuple[LiteralString, Iterable[Any] | None] = (sql, params)

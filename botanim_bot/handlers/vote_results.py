@@ -1,11 +1,10 @@
 from typing import cast
+
 from telegram import Update, User
 from telegram.ext import ContextTypes
 
 from botanim_bot.handlers.response import send_response
-from botanim_bot.services.vote_results import (
-    get_leaders,
-)
+from botanim_bot.services.vote_results import get_leaders
 from botanim_bot.services.votings import get_user_vote
 from botanim_bot.templates import render_template
 

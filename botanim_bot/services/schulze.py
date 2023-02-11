@@ -18,7 +18,7 @@ def _add_remaining_ranks(d, candidate, remaining_ranks, weight):
 
 def _add_ranks_to_d(d, ranks, weight):
     for i, rank in enumerate(ranks):
-        remaining_ranks = ranks[i + 1 :]
+        remaining_ranks = ranks[(i + 1) :]
         for candidate in rank:
             _add_remaining_ranks(d, candidate, remaining_ranks, weight)
 
@@ -49,7 +49,7 @@ def _compute_d(weighted_ranks, candidates):
     return d
 
 
-def _compute_p(d, candidates):
+def _compute_p(d, candidates):  # noqa: C901 TODO: need refactor, large nesting
     """Computes the p array in the Schulze method.
 
     p[V,W] is the strength of the strongest path from candidate V to W.

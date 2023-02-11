@@ -19,26 +19,35 @@ class Book:
 
     def is_started(self) -> bool:
         if self.read_start is not None:
-            return (
-                datetime.strptime(self.read_start, config.DATE_FORMAT).date()
-                <= datetime.now().date()
-            )
+            now_date = datetime.now().date()
+            start_read_date = datetime.strptime(
+                self.read_start, config.DATE_FORMAT
+            ).date()
+
+            return start_read_date >= now_date
+
         return False
 
     def is_finished(self) -> bool:
         if self.read_finish is not None:
-            return (
-                datetime.strptime(self.read_finish, config.DATE_FORMAT).date()
-                <= datetime.now().date()
-            )
+            now_date = datetime.now().date()
+            finish_read_date = datetime.strptime(
+                self.read_finish, config.DATE_FORMAT
+            ).date()
+
+            return finish_read_date <= now_date
+
         return False
 
     def is_planned(self) -> bool:
         if self.read_start is not None:
-            return (
-                datetime.strptime(self.read_start, config.DATE_FORMAT).date()
-                >= datetime.now().date()
-            )
+            now_date = datetime.now().date()
+            start_read_date = datetime.strptime(
+                self.read_start, config.DATE_FORMAT
+            ).date()
+
+            return start_read_date >= now_date
+
         return False
 
     def __post_init__(self):
