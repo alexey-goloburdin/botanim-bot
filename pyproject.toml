@@ -1,10 +1,10 @@
 [tool.poetry]
-name = "botanim-bot"
+name = "tg-budget-bot"
 version = "0.1.0"
 description = ""
-authors = ["Alexey Goloburdin <terrarium-a@yandex.ru>"]
+authors = ["Gadzhiev Islam"]
 readme = "README.md"
-packages = [{include = "botanim_bot"}]
+packages = [{include = "tg-budget-bot"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
