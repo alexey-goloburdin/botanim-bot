@@ -9,7 +9,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python 3.11
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: "3.11"
   
@@ -17,6 +17,14 @@ jobs:
       run: |
         pip install pipx
         pipx install poetry
+
+    - name: Validate the structure of the pyproject.toml
+      run: |
+        poetry check
+
+    - name: Verify that poetry.lock is consistent with pyproject.toml
+      run: |
+        poetry lock --check
     
     - name: Install dependencies
       run: |
