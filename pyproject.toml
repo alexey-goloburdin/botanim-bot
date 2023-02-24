@@ -1,35 +1,24 @@
 [tool.poetry]
-name = "botanim-bot"
+name = "example-bot"
 version = "0.1.0"
 description = ""
 authors = ["Alexey Goloburdin <terrarium-a@yandex.ru>"]
 readme = "README.md"
-packages = [{include = "botanim_bot"}]
+packages = [{include = "example_bot"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
 
 python-telegram-bot = "==20.0"
-aiosqlite = "==0.18.0"
 python-dotenv = "==0.21.1"
-schulze = "==0.1"
 jinja2 = "==3.1.2"
 
 [tool.poetry.group.dev.dependencies]
-ruff = "==0.0.240"
-pyright = "==1.1.291"
 black = "==23.1.0"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-
-[tool.ruff]
-select = ["F", "E", "W", "C90",
-          "I", "N", "S", "B", "A",
-          "ISC", "T20", "Q", "PTH"]
-
-ignore = ["A003"]
 
 [tool.pyright]
 reportUnnecessaryTypeIgnoreComment="warning"
