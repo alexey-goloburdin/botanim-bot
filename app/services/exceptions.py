@@ -1,6 +1,6 @@
-class UserInNotVoteMode(Exception):
+class UserIsNotInAllowedList(Exception):
     pass
 
 
-class NoActualVoting(Exception):
+class NoActualOrders(Exception):
     pass

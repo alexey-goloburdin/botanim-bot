@@ -4,7 +4,6 @@ version = "0.1.0"
 description = ""
 authors = ["Gadzhiev Islam"]
 readme = "README.md"
-packages = [{include = "tg-budget-bot"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"

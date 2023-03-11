@@ -2,7 +2,7 @@ import re
 
 import jinja2
 
-from botanim_bot import config
+from app import config
 
 
 def render_template(template_name: str, data: dict | None = None) -> str:

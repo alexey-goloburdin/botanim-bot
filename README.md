@@ -33,7 +33,7 @@ cp /.env.example /.env
 
 ```bash
 poetry install
-poetry run python -m tg-budget-bot
+poetry run python -m app
 ```
 
 ## Ideas

@@ -5,13 +5,17 @@ create table bot_user (
 create table income_category (
   id integer primary key,
   name varchar(60) not null unique,
-  ordering integer not null unique
+  ordering integer not null unique,
+  category_type integer not null,
+  check(category_type in (1))
 );
 
 create table expenses_category (
   id integer primary key,
   name varchar(60) not null unique,
-  ordering integer not null unique
+  ordering integer not null unique,
+  category_type integer not null,
+  check(category_type in (2))
 );
 
 create table income (
@@ -51,6 +55,28 @@ create table months (
   -- foreign key(id) references income_category(id), ?
 );
 
+-- Daytime table sheet:
+create table days (
+  id integer primary key,
+  month_number integer not null,
+  timestamp datetime default current_timestamp,
+  name varchar(50),
+  payment_type integer not null,
+  category_name integer not null,
+  price integer,
+  custom_comment text,
+  -- here may depend on what is the type of cactegory: income || expenses:
+  foreign key(category_name) references category_delegator(category_name),
+  -- 0: income, 1: expense 
+  check(payment_type in (0, 1))
+);
+
+create table category_delegator (
+  category_name varchar(60) 
+  -- foreign key(category_name_income) references income_category(name),
+  -- foreign key(category_name_expense) references expenses_category(name)
+);
+
 -- total sum, depends on what income | expenses category is, sums from monthes by it (category)
 create table total_sum (
   id integer primary key,
@@ -86,20 +112,39 @@ insert into months (name, ordering, which_half) values
 ('Декабрь', 120, 1),
 ('Декабрь', 125, 2);
 
-insert into income_category (name, ordering) values
-('Зарплата', 10),
-('Подработки', 20),
-('Инвестиции', 30),
-('Дополнительно', 40);
+insert into income_category (name, ordering, category_type) values
+('Зарплата', 10, 1),
+('Подработки', 20, 1),
+('Инвестиции', 30, 1),
+('Дополнительно', 40, 1);
 
-insert into expenses_category (name, ordering) values
-('Питание', 10),
-('Транспорт', 20),
-('Дом', 30),
-('Здоровье', 40),
-('Связь', 50),
-('Подарки', 60),
-('Одежда', 70),
-('Путешествия', 80),
-('Мелочь', 90),
-('Другое', 100);
+insert into expenses_category (name, ordering, category_type) values
+('Питание', 10, 2),
+('Транспорт', 20, 2),
+('Дом', 30, 2),
+('Здоровье', 40, 2),
+('Связь', 50, 2),
+('Подарки', 60, 2),
+('Одежда', 70, 2),
+('Путешествия', 80, 2),
+('Мелочь', 90, 2),
+('Другое', 100, 2);
+
+insert into category_delegator (category_name) select name from income_category;
+insert into category_delegator (category_name) select name from expenses_category;
+/*
+(1, 'Зарплата', null),
+(1, 'Подработки', null),
+(1, 'Инвестиции', null),
+(1, 'Дополнительно', null),
+(2, null, 'Питание'),
+(2, null, 'Транспорт'),
+(2, null, 'Дом'),
+(2, null, 'Здоровье'),
+(2, null, 'Связь'),
+(2, null, 'Подарки'),
+(2, null, 'Одежда'),
+(2, null, 'Путешествия'),
+(2, null, 'Мелочь'),
+(2, null, 'Другое');
+*/

@@ -1,4 +1,5 @@
 def books_to_words(books_count: int) -> str:
+    # TODO: change for days and orders, maybe
     days = ["книга", "книги", "книг"]
     if books_count % 10 == 1 and books_count % 100 != 11:
         p = 0

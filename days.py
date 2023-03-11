@@ -6,51 +6,20 @@ from typing import LiteralString, cast
 from botanim_bot import config
 from botanim_bot.db import fetch_all
 
+# TODO: refactor - unbind dataclaasses and make SQL-speaaking objects
 
 @dataclass
-class Book:
+'''Represents in-day orders on incomes-expenses'''
+class Day:
     id: int
-    name: str
+    monthNumber: str
     category_id: int
-    category_name: str
-    read_start: str | None
-    read_finish: str | None
-    read_comments: str | None
-
-    def is_started(self) -> bool:
-        if self.read_start is not None:
-            return (
-                datetime.strptime(self.read_start, config.DATE_FORMAT).date()
-                <= datetime.now().date()
-            )
-        return False
-
-    def is_finished(self) -> bool:
-        if self.read_finish is not None:
-            return (
-                datetime.strptime(self.read_finish, config.DATE_FORMAT).date()
-                <= datetime.now().date()
-            )
-        return False
-
-    def is_planned(self) -> bool:
-        if self.read_start is not None:
-            return (
-                datetime.strptime(self.read_start, config.DATE_FORMAT).date()
-                >= datetime.now().date()
-            )
-        return False
-
-    def __post_init__(self):
-        """Set up read_start and read_finish to needed string format"""
-        for field in ("read_start", "read_finish"):
-            value = getattr(self, field)
-            if value is None:
-                continue
-            value = datetime.strptime(value, "%Y-%m-%d").strftime(config.DATE_FORMAT)
-            setattr(self, field, value)
-
-        self.name = format_book_name(self.name)
+    dateTime: str
+    name: str
+    payment_type: int
+    price: int
+    custom_comment: str
+    category_name: int
 
 
 @dataclass
