@@ -11,7 +11,7 @@
       Несколько книг занимают это место:<br>
     {% endif %}
     {% for book in books_in_rank.books %}
-      {% if books_in_rank.books|length > 1 %}{FOURPACES}{% endif %}{{ book.book_name }}
+      {% if books_in_rank.books|length > 1 %}{FOURPACES}{% endif %}{{ book.book_name | safe }}
       <br>
     {% endfor %}
   {% endfor %}
@@ -26,9 +26,9 @@
 {% else %}
 <b>Твой выбор</b><br>
 <br>
-1. {{ your_vote.first_book_name }}<br>
-2. {{ your_vote.second_book_name }}<br>
-3. {{ your_vote.third_book_name }}<br>
+1. {{ your_vote.first_book_name | safe }}<br>
+2. {{ your_vote.second_book_name | safe }}<br>
+3. {{ your_vote.third_book_name | safe }}<br>
 {% endif %}
 <br>
 {% if not leaders.voting.is_voting_has_passed() %}
