@@ -19,7 +19,7 @@
 Скопируйте `.env.example` в `.env` и отредактируйте `.env` файл, заполнив в нём все переменные окружения:
 
 ```bash
-cp botanim_bot/.env.example botanim_bot/.env
+cp -n botanim_bot/.env.example botanim_bot/.env
 ```
 
 Для управления зависимостями используется [poetry](https://python-poetry.org/),
