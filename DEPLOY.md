@@ -2,7 +2,16 @@
 
 Протестировано на Debian 10.
 
-Обновляем систему
+С помощью скрипта:
+
+```bash
+git clone https://github.com/alexey-goloburdin/botanim-bot.git ~/code/botanim-bot
+. ~/code/botanim-bot/deploy.sh
+```
+
+Вручную:
+
+Обновляем систему:
 
 ```bash
 sudo apt update && sudo apt upgrade
