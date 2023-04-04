@@ -59,7 +59,7 @@ poetry run python -m botanim_bot
 
 Можно проверить работу бота. Для остановки, жмём `CTRL`+`C`.
 
-Получим текущий адрес до Pytnon-интерпретатора в poetry виртуальном окружении Poetry:
+Получим текущий адрес до Python-интерпретатора в poetry виртуальном окружении Poetry:
 
 ```bash
 poetry shell
