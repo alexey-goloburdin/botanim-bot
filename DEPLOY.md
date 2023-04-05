@@ -2,7 +2,52 @@
 
 Протестировано на Debian 10.
 
-С помощью скрипта:
+- [Docker](#в-docker-контейнере)
+- [Скрипт](#с-помощью-скрипта)
+- [Вручную](#вручную)
+
+---
+
+### В Docker контейнере:
+
+Для начала установим docker на хост-машину по [инструкции](https://docs.docker.com/engine/install/).
+
+Проверяем что все установилось корректно командой:
+
+```bash
+docker --version
+
+```
+
+Клонируем репозиторий:
+
+```bash
+git clone https://github.com/alexey-goloburdin/botanim-bot.git ~/code/botanim-bot
+
+```
+
+Добавляем переменные окружения:
+
+```bash
+cp -n ~/code/botanim-bot/botanim_bot/.env.example ~/code/botanim-bot/botanim_bot/.env
+vim ~/code/botanim-bot/botanim_bot/.env
+
+```
+
+> `TELEGRAM_BOT_TOKEN` — токен бота, полученный в BotFather,
+> `TELEGRAM_BOTANIM_CHANNEL_ID` — идентификатор группы книжного клуба, участие в котором будет проверять бот в процессе голосования.
+
+Собираем образ и запускаем в detach моде:
+
+```bash
+docker build -t botanim-bot .
+docker run -d botanim-bot
+
+```
+
+---
+
+### С помощью скрипта:
 
 Клонируем репозиторий и запускаем скрипт:
 
@@ -12,7 +57,9 @@ git clone https://github.com/alexey-goloburdin/botanim-bot.git ~/code/botanim-bo
 
 ```
 
-Вручную:
+---
+
+### Вручную:
 
 Обновляем систему:
 
@@ -20,7 +67,7 @@ git clone https://github.com/alexey-goloburdin/botanim-bot.git ~/code/botanim-bo
 sudo apt update && sudo apt upgrade
 ```
 
-Устанавливаем Python 3.11 сборкой из исходников и sqlite3:
+Устанавливаем Python 3.11.1 сборкой из исходников и sqlite3:
 
 ```bash
 cd
