@@ -4,9 +4,12 @@
 
 С помощью скрипта:
 
+Клонируем репозиторий и запускаем скрипт:
+
 ```bash
 git clone https://github.com/alexey-goloburdin/botanim-bot.git ~/code/botanim-bot
 . ~/code/botanim-bot/deploy.sh
+
 ```
 
 Вручную:
