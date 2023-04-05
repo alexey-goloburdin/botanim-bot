@@ -59,10 +59,6 @@ sqlite3 db.sqlite3 < db.sql
 cd ~/code/botanim-bot
 poetry install
 
-# Сборка проекта в виртуальном окружении Poetry:
-
-poetry env use 3.11
-
 # Настроим systemd-юнит для автоматического запуска бота:
 
 sudo tee /etc/systemd/system/botanimbot.service << END
