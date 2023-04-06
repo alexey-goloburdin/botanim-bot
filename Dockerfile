@@ -13,7 +13,6 @@ ENV PATH=/root/.local/bin:$PATH
 
 COPY . .
 
-RUN sqlite3 /app/botanim_bot/db.sqlite3 < /app/botanim_bot/db.sql
 RUN poetry config virtualenvs.create false
 RUN poetry install
 
