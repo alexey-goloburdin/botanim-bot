@@ -4,6 +4,7 @@ from telegram.ext import (
     ApplicationBuilder,
     CallbackQueryHandler,
     CommandHandler,
+    Defaults,
     MessageHandler,
     filters,
 )
@@ -42,7 +43,12 @@ if not config.TELEGRAM_BOT_TOKEN or not config.TELEGRAM_BOTANIM_CHANNEL_ID:
 
 
 def main():
-    application = ApplicationBuilder().token(config.TELEGRAM_BOT_TOKEN).build()
+    application = (
+        ApplicationBuilder()
+        .token(config.TELEGRAM_BOT_TOKEN)
+        .defaults(defaults=Defaults(block=False))
+        .build()
+    )
 
     for command_name, command_handler in COMMAND_HANDLERS.items():
         application.add_handler(CommandHandler(command_name, command_handler))
