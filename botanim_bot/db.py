@@ -33,6 +33,7 @@ async def fetch_one(
     cursor = await _get_cursor(sql, params)
     row_ = await cursor.fetchone()
     if not row_:
+        await cursor.close()
         return None
     row = _get_result_with_column_names(cursor, row_)
     await cursor.close()
