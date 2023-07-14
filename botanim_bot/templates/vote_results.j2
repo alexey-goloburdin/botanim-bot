@@ -11,7 +11,7 @@
       Несколько книг занимают это место:<br>
     {% endif %}
     {% for book in books_in_rank.books %}
-      {% if books_in_rank.books|length > 1 %}{FOURPACES}{% endif %}{{ book.book_name | safe }}
+      {% if books_in_rank.books|length > 1 %}{FOURPACES}{% endif %}{{ book.book_name | safe }}. Номер книги: <code>{{ book.positional_number }}</code>
       <br>
     {% endfor %}
   {% endfor %}

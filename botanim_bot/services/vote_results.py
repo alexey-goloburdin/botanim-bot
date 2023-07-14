@@ -4,13 +4,17 @@ from typing import Iterable, TypedDict, TypeVar, cast
 from botanim_bot import config
 from botanim_bot.db import fetch_all
 from botanim_bot.services import schulze
-from botanim_bot.services.books import get_book_names_by_ids
+from botanim_bot.services.books import (
+    get_all_book_ids_to_position_numbers,
+    get_book_names_by_ids,
+)
 from botanim_bot.services.votings import Voting, get_actual_or_last_voting
 
 
 @dataclass
 class BookVoteResult:
     book_name: str
+    positional_number: int
 
 
 @dataclass
@@ -59,9 +63,16 @@ async def _build_vote_leaders(
 ) -> VoteLeaders:
     book_id_to_name = await get_book_names_by_ids(books_candidates)
     vote_leaders = _init_vote_results(voting)
+
+    book_id_to_positional_number = await get_all_book_ids_to_position_numbers()
+
     for books_set in leaders:
         book_names = [
-            BookVoteResult(book_name=book_id_to_name[book]) for book in books_set
+            BookVoteResult(
+                book_name=book_id_to_name[book],
+                positional_number=book_id_to_positional_number[book],
+            )
+            for book in books_set
         ]
         vote_leaders.leaders.append(BooksList(books=book_names))
     return vote_leaders

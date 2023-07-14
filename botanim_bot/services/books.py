@@ -76,6 +76,17 @@ async def get_all_books() -> Iterable[Category]:
     return _group_books_by_categories(books)
 
 
+async def get_all_book_ids_to_position_numbers() -> dict[int, int]:
+    categories = await get_not_started_books()
+    id_to_positional_number = {}
+    index = 0
+    for category in categories:
+        for book in category.books:
+            index += 1
+            id_to_positional_number[book.id] = index
+    return id_to_positional_number
+
+
 async def get_not_started_books() -> Iterable[Category]:
     sql = f"""{_get_books_base_sql()}
               WHERE b.read_start IS NULL
