@@ -26,9 +26,9 @@
 {% else %}
 <b>Твой выбор</b><br>
 <br>
-1. {{ your_vote.first_book_name | safe }}<br>
-2. {{ your_vote.second_book_name | safe }}<br>
-3. {{ your_vote.third_book_name | safe }}<br>
+1. {{ your_vote.first_book_name | safe }}. Номер книги: <code>{{ your_vote.first_book_positional_number }}</code><br>
+2. {{ your_vote.second_book_name | safe }}. Номер книги: <code>{{ your_vote.second_book_positional_number }}</code><br>
+3. {{ your_vote.third_book_name | safe }}. Номер книги: <code>{{ your_vote.third_book_positional_number }}</code><br>
 {% endif %}
 <br>
 {% if not leaders.voting.is_voting_has_passed() %}

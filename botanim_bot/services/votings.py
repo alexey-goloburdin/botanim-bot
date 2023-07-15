@@ -5,7 +5,10 @@ from typing import Iterable
 
 from botanim_bot import config
 from botanim_bot.db import execute, fetch_one
-from botanim_bot.services.books import Book, format_book_name
+from botanim_bot.services.books import (
+    Book,
+    format_book_name,
+)
 from botanim_bot.services.exceptions import NoActualVotingError, UserInNotVoteModeError
 from botanim_bot.services.users import insert_user
 from botanim_bot.services.vote_mode import (
@@ -48,8 +51,13 @@ class Voting:
 @dataclass
 class Vote:
     first_book_name: str
+    first_book_positional_number: str
+
     second_book_name: str
+    second_book_positional_number: str
+
     third_book_name: str
+    third_book_positional_number: str
 
 
 async def get_actual_voting() -> Voting | None:
@@ -104,26 +112,52 @@ async def save_vote(telegram_user_id: int, books: Iterable[Book]) -> None:
 
 async def get_user_vote(user_id: int, voting_id: int) -> Vote | None:
     sql = """
+        WITH pos_numbers AS (
+            SELECT
+                ROW_NUMBER() OVER (ORDER BY c.ordering, b.ordering) AS rn,
+                b.id AS book_id
+            FROM book b LEFT JOIN book_category c ON c.id=b.category_id
+            WHERE b.read_start IS NULL
+        )
         SELECT
             b1.name AS first_book_name,
+            b1_pos_number.rn AS first_book_positional_number,
             b2.name AS second_book_name,
-            b3.name AS third_book_name
+            b2_pos_number.rn AS second_book_positional_number,
+            b3.name AS third_book_name,
+            b3_pos_number.rn AS third_book_positional_number
         FROM vote v
-        LEFT JOIN book b1 ON v.first_book_id =b1.id
-        LEFT JOIN book b2 ON v.second_book_id =b2.id
-        LEFT JOIN book b3 ON v.third_book_id =b3.id
+        LEFT JOIN book b1 ON v.first_book_id = b1.id
+        LEFT JOIN book b2 ON v.second_book_id = b2.id
+        LEFT JOIN book b3 ON v.third_book_id = b3.id
+        LEFT JOIN pos_numbers AS b1_pos_number ON b1_pos_number.book_id=b1.id
+        LEFT JOIN pos_numbers AS b2_pos_number ON b2_pos_number.book_id=b2.id
+        LEFT JOIN pos_numbers AS b3_pos_number ON b3_pos_number.book_id=b3.id
         WHERE v.user_id=:user_id
             AND v.vote_id=:voting_id
     """
     vote = await fetch_one(sql, {"user_id": user_id, "voting_id": voting_id})
     if not vote:
         return None
-    return Vote(
-        **{
-            field: format_book_name(vote[field])
-            for field in ("first_book_name", "second_book_name", "third_book_name")
+    user_vote = {
+        field: format_book_name(vote[field])
+        for field in (
+            "first_book_name",
+            "second_book_name",
+            "third_book_name",
+        )
+    }
+    user_vote.update(
+        {
+            k: vote[k]
+            for k in (
+                "first_book_positional_number",
+                "second_book_positional_number",
+                "third_book_positional_number",
+            )
         }
     )
+    return Vote(**user_vote)
 
 
 def _build_voting(voting_db_row: dict) -> Voting:
