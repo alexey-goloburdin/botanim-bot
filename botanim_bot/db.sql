@@ -227,3 +227,5 @@ where name='PostgreSQL. Основы языка SQL :: Евгений Моргу
 
 
 insert into voting (voting_start, voting_finish) values ('2023-01-26', '2023-01-30');
+
+alter table book add column group_post_link varchar(60);

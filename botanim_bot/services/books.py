@@ -17,6 +17,7 @@ class Book:
     read_finish: str | None
     read_comments: str | None
     positional_number: int
+    group_post_link: str | None
 
     def is_started(self) -> bool:
         if self.read_start is not None:
@@ -200,6 +201,7 @@ def _get_books_base_sql(select_param: LiteralString | None = None) -> LiteralStr
         SELECT
             b.id as book_id,
             b.name as book_name,
+            b.group_post_link,
             c.id as category_id,
             c.name as category_name,
             pos_number.rn as positional_number,
@@ -224,6 +226,7 @@ async def _get_books_from_db(sql: LiteralString) -> list[Book]:
             read_finish=book["read_finish"],
             read_comments=book["read_comments"],
             positional_number=book["positional_number"],
+            group_post_link=book["group_post_link"],
         )
         for book in books_raw
     ]

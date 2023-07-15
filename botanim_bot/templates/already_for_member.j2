@@ -1,0 +1,8 @@
+Прочитанные книги для участника Ботаним:<br>
+<br>
+{% for book in already_read_books %}
+  {{ loop.index }}. <a href="{{ book.group_post_link }}">{{ book.name | safe }}</a><br><br>
+  {{ book.read_comments }}. Читали с {{ book.read_start }} по {{ book.read_finish }}.
+  <br><br>
+{% endfor %}
+
