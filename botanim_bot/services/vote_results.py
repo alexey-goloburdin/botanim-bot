@@ -5,8 +5,7 @@ from botanim_bot import config
 from botanim_bot.db import fetch_all
 from botanim_bot.services import schulze
 from botanim_bot.services.books import (
-    get_book_names_by_ids,
-    get_not_started_book_ids_to_position_numbers,
+    get_books_info_by_ids,
 )
 from botanim_bot.services.votings import Voting, get_actual_or_last_voting
 
@@ -61,16 +60,14 @@ def _get_top_leaders_with_schulze(
 async def _build_vote_leaders(
     voting: Voting, books_candidates: Iterable[int], leaders: list[list[int]]
 ) -> VoteLeaders:
-    book_id_to_name = await get_book_names_by_ids(books_candidates)
+    book_id_to_book = await get_books_info_by_ids(books_candidates)
     vote_leaders = _init_vote_results(voting)
-
-    book_id_to_positional_number = await get_not_started_book_ids_to_position_numbers()
 
     for books_set in leaders:
         book_names = [
             BookVoteResult(
-                book_name=book_id_to_name[book],
-                positional_number=book_id_to_positional_number[book],
+                book_name=book_id_to_book[book].name,
+                positional_number=cast(int, book_id_to_book[book].positional_number),
             )
             for book in books_set
         ]

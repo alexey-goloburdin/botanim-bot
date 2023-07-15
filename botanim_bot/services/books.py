@@ -16,6 +16,7 @@ class Book:
     read_start: str | None
     read_finish: str | None
     read_comments: str | None
+    positional_number: int
 
     def is_started(self) -> bool:
         if self.read_start is not None:
@@ -74,17 +75,6 @@ async def get_all_books() -> Iterable[Category]:
               ORDER BY c."ordering", b."ordering" """
     books = await _get_books_from_db(sql)
     return _group_books_by_categories(books)
-
-
-async def get_not_started_book_ids_to_position_numbers() -> dict[int, int]:
-    categories = await get_not_started_books()
-    id_to_positional_number = {}
-    index = 0
-    for category in categories:
-        for book in category.books:
-            index += 1
-            id_to_positional_number[book.id] = index
-    return id_to_positional_number
 
 
 async def get_not_started_books() -> Iterable[Category]:
@@ -165,13 +155,15 @@ async def get_books_by_positional_numbers(numbers: Iterable[int]) -> tuple[Book]
     return tuple(await _get_books_from_db(cast(LiteralString, sql)))
 
 
-async def get_book_names_by_ids(ids: Iterable[int]) -> dict[int, str]:
-    int_ids = tuple(map(str, map(int, ids)))
-    sql = f"""{_get_books_base_sql()}
-              WHERE b.id IN ({",".join(int_ids)})
-              ORDER BY c."name", b."name" """
+async def get_books_info_by_ids(ids: Iterable[int]) -> dict[int, Book]:
+    int_ids = tuple(str(int(id_)) for id_ in ids)
+    sql = f"""
+        {_get_books_base_sql()}
+        WHERE b.id IN ({",".join(int_ids)})
+        ORDER BY c."name", b."name"
+    """
     books = await _get_books_from_db(cast(LiteralString, sql))
-    return {book.id: book.name for book in books}
+    return {b.id: b for b in books}
 
 
 def format_book_name(book_name: str) -> str:
@@ -198,16 +190,25 @@ def _group_books_by_categories(books: Iterable[Book]) -> Iterable[Category]:
 
 def _get_books_base_sql(select_param: LiteralString | None = None) -> LiteralString:
     return f"""
+        WITH pos_numbers AS (
+            SELECT
+                ROW_NUMBER() OVER (ORDER BY c.ordering, b.ordering) AS rn,
+                b.id AS book_id
+            FROM book b LEFT JOIN book_category c ON c.id=b.category_id
+            WHERE b.read_start IS NULL
+        )
         SELECT
             b.id as book_id,
             b.name as book_name,
             c.id as category_id,
             c.name as category_name,
+            pos_number.rn as positional_number,
             {select_param + "," if select_param else ""}
             b.read_start, b.read_finish,
             read_comments
         FROM book b
         LEFT JOIN book_category c ON c.id=b.category_id
+        LEFT JOIN pos_numbers AS pos_number ON pos_number.book_id=b.id
     """
 
 
@@ -222,6 +223,7 @@ async def _get_books_from_db(sql: LiteralString) -> list[Book]:
             read_start=book["read_start"],
             read_finish=book["read_finish"],
             read_comments=book["read_comments"],
+            positional_number=book["positional_number"],
         )
         for book in books_raw
     ]
