@@ -2,13 +2,19 @@
 
 Протестировано на Debian 10.
 
-Обновляем систему
+[Вручную](#вручную) | [Скрипт](#с-помощью-скрипта) | [Docker](#в-docker-контейнере)
+
+---
+
+### Вручную:
+
+Обновляем систему:
 
 ```bash
 sudo apt update && sudo apt upgrade
 ```
 
-Устанавливаем Python 3.11 сборкой из исходников и sqlite3:
+Устанавливаем Python 3.11.1 сборкой из исходников и sqlite3:
 
 ```bash
 cd
@@ -59,7 +65,7 @@ poetry run python -m botanim_bot
 
 Можно проверить работу бота. Для остановки, жмём `CTRL`+`C`.
 
-Получим текущий адрес до Pytnon-интерпретатора в poetry виртуальном окружении Poetry:
+Получим текущий адрес до Python-интерпретатора в poetry виртуальном окружении Poetry:
 
 ```bash
 poetry shell
@@ -92,4 +98,66 @@ END
 sudo systemctl daemon-reload
 sudo systemctl enable botanimbot.service
 sudo systemctl start botanimbot.service
+```
+
+---
+
+### С помощью скрипта:
+
+Клонируем репозиторий и запускаем скрипт:
+
+```bash
+git clone https://github.com/alexey-goloburdin/botanim-bot.git ~/code/botanim-bot
+. ~/code/botanim-bot/deploy.sh
+
+```
+
+---
+
+### В Docker контейнере:
+
+Для начала установим docker на хост-машину по [инструкции](https://docs.docker.com/engine/install/).
+
+Проверяем что все установилось корректно командой:
+
+```bash
+docker --version
+
+```
+
+Клонируем репозиторий:
+
+```bash
+git clone https://github.com/alexey-goloburdin/botanim-bot.git ~/code/botanim-bot
+
+```
+
+Добавляем переменные окружения:
+
+```bash
+cp -n ~/code/botanim-bot/botanim_bot/.env.example ~/code/botanim-bot/botanim_bot/.env
+vim ~/code/botanim-bot/botanim_bot/.env
+
+```
+
+> `TELEGRAM_BOT_TOKEN` — токен бота, полученный в BotFather,
+> `TELEGRAM_BOTANIM_CHANNEL_ID` — идентификатор группы книжного клуба, участие в котором будет проверять бот в процессе голосования.
+
+Создаем базу локально, для того чтобы она сохранялась после пересоздания контейнера:
+
+```bash
+sudo apt update && sudo apt install -y sqlite3
+sqlite3 ~/code/botanim-bot/botanim_bot/db.sqlite3 < ~/code/botanim-bot/botanim_bot/db.sql
+
+```
+
+Собираем образ и запускаем в detach моде прокидывая локальную базу:
+
+```bash
+docker build --tag botanim_bot .
+docker run --detach \
+	--name botanim-bot \
+	--mount type=bind,source=$HOME/code/botanim-bot/botanim_bot/db.sqlite3,target=/app/botanim_bot/db.sqlite3 \
+	botanim_bot
+
 ```

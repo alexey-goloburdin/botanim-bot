@@ -1,0 +1,5 @@
+botanim_bot/.env.example
+botanim_bot/db.sql
+deploy.sh
+botanim_logo.svg
+DEPLOY.md
