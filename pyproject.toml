@@ -9,16 +9,16 @@ packages = [{include = "botanim_bot"}]
 [tool.poetry.dependencies]
 python = "^3.11"
 
-python-telegram-bot = "==20.0"
-aiosqlite = "==0.18.0"
-python-dotenv = "==0.21.1"
-schulze = "==0.1"
-jinja2 = "==3.1.2"
+python-telegram-bot = "21.10"
+aiosqlite = "0.21.0"
+python-dotenv = "1.0.1"
+schulze = "0.1"
+jinja2 = "3.1.5"
 
 [tool.poetry.group.dev.dependencies]
-ruff = "==0.0.240"
-pyright = "==1.1.291"
-black = "==23.1.0"
+ruff = "0.9.6"
+pyright = "1.1.394"
+black = "25.1.0"
 
 [build-system]
 requires = ["poetry-core"]
